@@ -106,9 +106,6 @@
     <ClInclude Include="vertex.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>Engine\VBGO Headers</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
@@ -122,6 +119,9 @@
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
     <ClInclude Include="VBData.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidCube.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -189,6 +189,9 @@
       <Filter>Engine\VBGO Source</Filter>
     </ClCompile>
     <ClCompile Include="WireCircle.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidCube.cpp">
       <Filter>Engine\VBGO Source</Filter>
     </ClCompile>
   </ItemGroup>

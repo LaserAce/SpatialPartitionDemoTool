@@ -70,6 +70,7 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input) : SV_Target
 {
+	return float4(ambientCol[0], ambientCol[1], ambientCol[2], ambientCol[3]);
 	float4 vertexCol = input.Color * myTexture.Sample( mySampler, input.texCoord );
 	float3 lightDir = normalize( input.worldPos - lightPos );
 	float4 diffuse =  saturate(max( 0.0f, dot( lightDir, normalize(input.Norm )) ) * lightCol);
