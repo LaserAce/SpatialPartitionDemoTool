@@ -1,0 +1,14 @@
+#ifndef _PARTITION_METHODS_H_
+#define _PARTITION_METHODS_H_
+
+enum PartitionMethods
+{
+	NONE = 0,
+	GRID,
+	QUADTREE,
+	KD_TREE,
+	R_TREE,
+	MAX_METHODS
+};
+
+#endif _PARTITION_METHODS_H_

@@ -1,0 +1,43 @@
+#ifndef _OBJECT_LIST_H_
+#define _OBJECT_LIST_H_
+
+//to save you typing in all the headers of all the classes derived from the GameObject class lets put them all here
+
+#include "camera.h"
+#include "CMOGO.h"
+#include "collisionmanager.h"
+#include "enemySpawner.h"
+#include "spawnerManager.h"
+#include "projectile.h"
+#include "enemy.h"
+#include "collision.h"
+#include "terrain.h"
+#include "player.h"
+#include "playerManager.h"
+#include "GameCamera.h"
+#include "editorcamera.h"
+#include "light.h"
+#include "VBGO.h"
+#include "VBShape.h"
+#include "fileVBGO.h"
+#include "VBCube.h"
+#include "SpikedVB.h"
+#include "spiral.h"
+#include "pillow.h"
+#include "snail.h"
+#include "sphere.h"
+#include "loadfunctions.h"
+#include "loadfile.h"
+#include "savefile.h"
+#include "savefunctions.h"
+#include "pickup.h"
+#include "pickupmanager.h"
+#include "healthpickup.h"
+#include "scorepickup.h"
+#include "potionpickup.h"
+#include "keypickup.h"
+#include "door.h"
+#include "teleporter.h"
+#include "teleportermanager.h"
+
+#endif

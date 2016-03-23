@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns:atg="http://atg.xbox.com" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{4e04b820-d160-4cc0-b8bc-54580483ab4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{8fa425d5-61e5-4c22-9d31-c7c501cdc1fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Resource Files">
+      <UniqueIdentifier>{8e114980-c1a3-4ada-ad7c-83caadf5daeb}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Engine\Header Files">
+      <UniqueIdentifier>{142f2be2-c253-4b1d-9859-b920104b7a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Source Files">
+      <UniqueIdentifier>{25ec56ac-3c76-43de-9c8e-fca5afa85b3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\SpatialPartitionHeaders">
+      <UniqueIdentifier>{447aba17-8ad7-45da-8c32-e5af24eea6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\SpatialPartitionSource">
+      <UniqueIdentifier>{6e81ff0f-edd0-4d98-91e8-47b701dcc78f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\VBGO Headers">
+      <UniqueIdentifier>{0e5f293f-03e5-43b2-bb55-9838e2d6aaf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\VBGO Source">
+      <UniqueIdentifier>{a1a69eec-8b55-4905-8432-1aa3dd65fe41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CLInclude Include="resource.h">
+      <Filter>Base\Resource Files</Filter>
+    </CLInclude>
+    <ClInclude Include="drawdata.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamedata.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobject.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="helper.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyEffectsFactory.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject2D.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawData2D.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Partition.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="dinput0x0800.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionObject.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Quadtree.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Pointer.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionManager.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="KDtree.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BruteForce.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionMethods.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="VBShape.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="VBGO.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="WireCube.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WireDiamond.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="WireCircle.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tutorial01.rc">
+      <Filter>Base\Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Tutorial01.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobject.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject2D.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PartitionObject.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="Quadtree.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="Pointer.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PartitionManager.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="Partition.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="KDtree.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BruteForce.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VBGO.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VBShape.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WireCube.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WireDiamond.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WireCircle.cpp">
+      <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
