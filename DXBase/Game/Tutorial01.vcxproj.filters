@@ -124,6 +124,12 @@
     <ClInclude Include="SolidCube.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
+    <ClInclude Include="StatisticManager.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatisticTest.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tutorial01.rc">
@@ -193,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="SolidCube.cpp">
       <Filter>Engine\VBGO Source</Filter>
+    </ClCompile>
+    <ClCompile Include="StatisticManager.cpp">
+      <Filter>Engine\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

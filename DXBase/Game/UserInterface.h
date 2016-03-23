@@ -22,6 +22,9 @@ class UserInterface : public GameObject
 public:
 	UserInterface();
 	virtual ~UserInterface();
+
+	static UserInterface* Singleton() { return singleton; }
+
 	void SetupTwBars();
 	void AdjustSize();
 
@@ -43,9 +46,23 @@ public:
 	//list<const char*>* GetInterfaceMethodVariables(){ return &m_interfaceMethodVariables; }
 	void InterfacePointMethod();
 protected:
+	static UserInterface* singleton;
+
+	void MouseClick();
+	void MouseHold();
+	void MouseRelease();
+	
+	void CreateQuery();
+	void PositionQuery();
+	Vector3 queryPivot;
+	VBShape* queryShape = nullptr;
+
+	bool isDrawingQuery = false;
+
 	bool PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point);
 
 	TwBar* leftUI;
+	TwBar* rightUI;
 	//lower number takes up more space on screen
 	float m_size;
 

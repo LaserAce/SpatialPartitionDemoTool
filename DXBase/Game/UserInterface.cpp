@@ -5,8 +5,11 @@
 #include "VBShape.h"
 #include "Pointer.h"
 
+UserInterface* UserInterface::singleton = nullptr;
+
 UserInterface::UserInterface()
 {
+	singleton = this;
 	m_method = INTERFACE_POINT;
 	m_wireRadius = new VBShape();
 	m_wireRadius->InitialiseShape("WireCircle2D");
@@ -17,17 +20,29 @@ UserInterface::~UserInterface()
 {
 	TwDeleteAllBars();
 	delete m_wireRadius;
+	if (queryShape)
+	{
+		delete queryShape;
+	}
 }
 
 void UserInterface::SetupTwBars()
 {
 	leftUI = TwNewBar("leftUI");
-	TwDefine(" leftUI label='UI' ");
+	TwDefine(" leftUI label='Parameter Interface' ");
 	TwDefine(" leftUI movable=false ");
 	TwDefine(" leftUI resizable=false ");
 	TwDefine(" leftUI color='122 122 122' ");
 	TwDefine(" leftUI position='0 0' ");
 	TwDefine(" leftUI iconifiable=false ");
+
+	rightUI = TwNewBar("rightUI");
+	TwDefine(" rightUI label='Statistic Tracker' ");
+	TwDefine(" rightUI movable=false ");
+	TwDefine(" rightUI resizable=false ");
+	TwDefine(" rightUI color='122 122 122' ");
+	TwDefine(" rightUI iconifiable=false ");
+	
 
 	AdjustSize();
 
@@ -66,6 +81,9 @@ void UserInterface::AdjustSize()
 	m_size = 0.15;
 	int barSize[2] = { (int)((float)m_winSize.right * m_size), m_winSize.bottom };
 	TwSetParam(leftUI, NULL, "size", TW_PARAM_INT32, 2, barSize);
+	TwSetParam(rightUI, NULL, "size", TW_PARAM_INT32, 2, barSize);
+	int barPosition[3] = { (int)((float)m_winSize.right - ((float)m_winSize.right * m_size)), 0, 0 };
+	TwSetParam(rightUI, NULL, "position", TW_PARAM_INT32, 3, barPosition);
 }
 
 void TW_CALL UserInterface::RebuildPartition(void* _clientData)
@@ -115,13 +133,40 @@ void UserInterface::Tick(GameData* _GD)
 {
 	if (_GD->mouse->rgbButtons[0] && !_GD->prevMouse->rgbButtons[0])
 	{
-		POINT cursor;
-		GetCursorPos(&(cursor));
-		const HWND hDesktop = GetDesktopWindow();
-		ScreenToClient(hDesktop, &cursor);
+		MouseClick();
+	}
+	else if (_GD->mouse->rgbButtons[0] && _GD->prevMouse->rgbButtons[0])
+	{
+		MouseHold();
+	}
+	else if (!_GD->mouse->rgbButtons[0] && _GD->prevMouse->rgbButtons[0])
+	{
+		MouseRelease();
+	}
+	if (m_pointsToSpawn > 1)
+	{
+		m_wireRadius->SetPos(Pointer::Singleton()->GetPos());
+		m_wireRadius->SetScale((float)m_pointsRange);
+		m_wireRadius->Tick(_GD);
+	}
+	if (queryShape)
+	{
+		queryShape->Tick(_GD);
+	}
+}
 
-		if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
+void UserInterface::MouseClick()
+{
+	POINT cursor;
+	GetCursorPos(&(cursor));
+	const HWND hDesktop = GetDesktopWindow();
+	ScreenToClient(hDesktop, &cursor);
+
+	if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
+	{
+		switch (m_method)
 		{
+		case INTERFACE_POINT:
 			PartitionManager::Singleton()->UnHighlightPartition();
 			if (m_pointsToSpawn == 1)
 			{
@@ -139,7 +184,7 @@ void UserInterface::Tick(GameData* _GD)
 					VBShape* p = new VBShape();
 					p->InitialiseShape("WireDiamond2D");
 					p->SetScale(0.75);
-				
+
 					Vector3 pos = Pointer::Singleton()->GetPos();
 					float a, b, c;
 					while (true)
@@ -161,18 +206,92 @@ void UserInterface::Tick(GameData* _GD)
 				}
 			}
 			PartitionManager::Singleton()->HighlightPartition();
+			break;
+		case INTERFACE_QUERY:
+			if (!isDrawingQuery)
+			{
+				isDrawingQuery = true;
+				queryPivot = Pointer::Singleton()->GetPos();
+				if (!queryShape)
+				{
+					queryShape = new VBShape();
+				}
+				queryShape->InitialiseShape("SolidCube2D");
+				queryShape->SetColour(Color(1.0f, 0.0f, 0.0f, 0.25f));
+				queryShape->SetScale(10.0f);
+			}
+			
+			//BEGIN DRAWING QUERY BOX
+			break;
 		}
 	}
-	if (m_pointsToSpawn > 1)
+}
+
+void UserInterface::MouseHold()
+{
+	POINT cursor;
+	GetCursorPos(&(cursor));
+	const HWND hDesktop = GetDesktopWindow();
+	ScreenToClient(hDesktop, &cursor);
+
+	switch (m_method)
 	{
-		m_wireRadius->SetPos(Pointer::Singleton()->GetPos());
-		m_wireRadius->SetScale((float)m_pointsRange);
-		m_wireRadius->Tick(_GD);
+	case INTERFACE_QUERY:
+		if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
+		{
+			if (isDrawingQuery)
+			{
+				PositionQuery();
+			}
+		}
+		else
+		{
+			if (isDrawingQuery)
+			{
+				CreateQuery();
+			}
+		}
+		break;
 	}
+}
+
+void UserInterface::MouseRelease()
+{
+	POINT cursor;
+	GetCursorPos(&(cursor));
+	const HWND hDesktop = GetDesktopWindow();
+	ScreenToClient(hDesktop, &cursor);
+
+	switch (m_method)
+	{
+	case INTERFACE_QUERY:
+		if (isDrawingQuery)
+		{
+			CreateQuery();
+		}
+		break;
+	}
+}
+
+void UserInterface::CreateQuery()
+{
+	isDrawingQuery = false;
+	//SAVE DRAWN QUERY BOX INTO WORLD
+}
+
+void UserInterface::PositionQuery()
+{
+	Vector3 _pointer = Pointer::Singleton()->GetPos();
+	queryShape->SetPos((queryPivot + _pointer) / 2);
+	queryShape->SetScale(Vector3(abs(queryPivot.x - _pointer.x)/2, abs(queryPivot.y - _pointer.y)/2,0.0f));
 }
 
 void UserInterface::Draw(DrawData* _DD)
 {
+	if (queryShape)
+	{
+		queryShape->Draw(_DD);
+	}
 	if (m_pointsToSpawn > 1)
 	{
 		m_wireRadius->Draw(_DD);
