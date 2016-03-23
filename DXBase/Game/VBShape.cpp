@@ -1,4 +1,5 @@
 #include "VBShape.h"
+#include "VBData.h"
 #include "WireCube.h"
 #include "WireDiamond.h"
 #include "WireCircle.h"
@@ -23,32 +24,22 @@ VBShape::~VBShape()
 
 void VBShape::AddShapes(ID3D11Device* _GD)
 {
-	string name;
-	VBData data;
+	VBData* data;
 
-	WireCube* cube = new WireCube();
-	data = cube->InitialiseBuffer(_GD, true);
-	s_VBHolder.insert(make_pair("WireCube3D", data));
+	data = WireCube::InitialiseBuffer(_GD, true);
+	s_VBHolder.insert(std::make_pair("WireCube3D", data));
 
-	cube = new WireCube();
-	data = cube->InitialiseBuffer(_GD, false);
-	s_VBHolder.insert(make_pair("WireCube2D", data));
+	data = WireCube::InitialiseBuffer(_GD, false);
+	s_VBHolder.insert(std::make_pair("WireCube2D", data));
 
-	WireDiamond* diamond = new WireDiamond();
-	data = diamond->InitialiseBuffer(_GD, true);
-	s_VBHolder.insert(make_pair("WireDiamond3D", data));
+	data = WireDiamond::InitialiseBuffer(_GD, true);
+	s_VBHolder.insert(std::make_pair("WireDiamond3D", data));
 
-	diamond = new WireDiamond();
-	data = diamond->InitialiseBuffer(_GD, false);
-	s_VBHolder.insert(make_pair("WireDiamond2D", data));
+	data = WireDiamond::InitialiseBuffer(_GD, false);
+	s_VBHolder.insert(std::make_pair("WireDiamond2D", data));
 
-	WireCircle* circle = new WireCircle();
-	data = circle->InitialiseBuffer(_GD, false);
-	s_VBHolder.insert(make_pair("WireCircle2D", data));
-
-	delete cube;
-	delete diamond;
-	delete circle;
+	data = WireCircle::InitialiseBuffer(_GD, false);
+	s_VBHolder.insert(std::make_pair("WireCircle2D", data));
 }
 
 void VBShape::InitialiseShape(string _shapeName)
@@ -58,9 +49,10 @@ void VBShape::InitialiseShape(string _shapeName)
 	VBMap::iterator it = s_VBHolder.find(_shapeName);
 	if (it != s_VBHolder.end())
 	{
-		m_numPrims = (*it).second.first;
-		m_VertexBuffer = (*it).second.second[0];
-		m_IndexBuffer = (*it).second.second[1];
+		m_topology = (*it).second->topology;
+		m_numPrims = (*it).second->numPrims;
+		m_VertexBuffer = (*it).second->vertexBuffer;
+		m_IndexBuffer = (*it).second->indexBuffer;
 	}
 	else
 	{

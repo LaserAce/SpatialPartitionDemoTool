@@ -27,6 +27,7 @@ PartitionManager::PartitionManager()
 
 PartitionManager::~PartitionManager()
 {
+	DeletePoints();
 	for (int i = 0; i < (int)m_partitionMethods.size(); ++i)
 	{
 		delete m_partitionMethods[i];

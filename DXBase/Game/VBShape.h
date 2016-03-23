@@ -4,9 +4,19 @@
 #include "VBGO.h"
 #include "vertex.h"
 #include <time.h>
+#include <map>
+#include <string>
+
+using std::map;
+using std::pair;
+using std::string;
 
 struct GameData;
 struct DrawData;
+struct VBData;
+
+//Used to store buffer information with identification string
+typedef map<string, VBData*> VBMap;
 
 class VBShape : public VBGO
 {

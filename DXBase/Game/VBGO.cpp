@@ -49,8 +49,8 @@ VBGO::VBGO()
 	m_pSampler			= nullptr;
 	m_pRasterState = nullptr;
 
-	//m_topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	m_topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+	m_topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	//m_topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 
 	//NOTE WE DON'T CREATE ANYTHING HERE
 	//WHATEVER INHERITS THIS WILL DO THAT
@@ -287,8 +287,9 @@ void VBGO::CleanUp()
 	if (s_pRasterState)		s_pRasterState->Release();
 }
 
-void VBGO::BuildIB(ID3D11Device* _GD, void* _indices)
+ID3D11Buffer* VBGO::BuildIB(ID3D11Device* _GD, int _numPrims, void* _indices)
 {
+	ID3D11Buffer* _buffer = NULL;
 	//structures from creating buffers
 	D3D11_BUFFER_DESC bd;
 	D3D11_SUBRESOURCE_DATA InitData;
@@ -297,15 +298,17 @@ void VBGO::BuildIB(ID3D11Device* _GD, void* _indices)
 	//build index buffer
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(WORD) * 3 * m_numPrims;
+	bd.ByteWidth = sizeof(WORD) * 3 * _numPrims;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	InitData.pSysMem = _indices;
-	hr = _GD->CreateBuffer(&bd, &InitData, &m_IndexBuffer);
+	hr = _GD->CreateBuffer(&bd, &InitData, &_buffer);
+	return _buffer;
 }
 
-void VBGO::BuildVB(ID3D11Device* _GD, int _numVerts, void* _vertices)
+ID3D11Buffer* VBGO::BuildVB(ID3D11Device* _GD, int _numVerts, void* _vertices)
 {
+	ID3D11Buffer* _buffer = NULL;
 	//structures from creating buffers
 	D3D11_BUFFER_DESC bd;
 	D3D11_SUBRESOURCE_DATA InitData;
@@ -319,5 +322,6 @@ void VBGO::BuildVB(ID3D11Device* _GD, int _numVerts, void* _vertices)
 	bd.CPUAccessFlags = 0;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = _vertices;
-	hr = _GD->CreateBuffer(&bd, &InitData, &m_VertexBuffer);
+	hr = _GD->CreateBuffer(&bd, &InitData, &_buffer);
+	return _buffer;
 }

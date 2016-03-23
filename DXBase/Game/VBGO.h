@@ -2,23 +2,12 @@
 #define _VB_GO_H_
 #include "gameobject.h"
 #include "ConstantBuffer.h"
-#include <map>
-#include <string>
-#include <vector>
-
-using std::map;
-using std::string;
-using std::vector;
-using std::pair;
 
 //the base Game Object drawn using a Vertex and Index Buffer
 //all of the main aspects of drawing it have a default which is pointed to by a static pointer
 //this is only used if the version for this object is not set to nullptr
 
-//Use to store buffer information
-typedef pair < UINT, vector<ID3D11Buffer*> > VBData;
-//Used to store buffer information with identification string
-typedef map<string, VBData> VBMap;
+
 
 class VBGO :public GameObject
 {
@@ -38,6 +27,11 @@ public:
 
 	static ID3D11Device* s_pd3dDevice;
 
+	//once populated build an Index Buffer
+	static ID3D11Buffer* BuildIB(ID3D11Device* _GD, int _numPrims, void* _indices);
+
+	//once populated build a Vertex Buffer
+	static ID3D11Buffer* BuildVB(ID3D11Device* _GD, int _numVerts, void* _vertices);
 
 protected:
 
@@ -79,12 +73,6 @@ protected:
 	ID3D11SamplerState*		m_pSampler;
 	//my raster state
 	ID3D11RasterizerState*  m_pRasterState;
-
-	//once populated build an Index Buffer
-	void BuildIB(ID3D11Device* _GD,void* _indices);
-
-	//once populated build a Vertex Buffer
-	void BuildVB(ID3D11Device* _GD,int _numVerts, void* _vertices);
 
 	static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 

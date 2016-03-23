@@ -401,6 +401,7 @@
     <CLInclude Include="resource.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="UserInterface.h" />
+    <ClInclude Include="VBData.h" />
     <ClInclude Include="VBGO.h" />
     <ClInclude Include="VBShape.h" />
     <ClInclude Include="vertex.h" />

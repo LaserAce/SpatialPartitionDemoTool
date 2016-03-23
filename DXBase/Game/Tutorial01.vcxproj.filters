@@ -121,6 +121,9 @@
     <ClInclude Include="WireCircle.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
+    <ClInclude Include="VBData.h">
+      <Filter>Engine\VBGO Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tutorial01.rc">
