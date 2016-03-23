@@ -4,12 +4,16 @@
 #include "Grid.h"
 #include "BruteForce.h"
 #include "PartitionObject.h"
-#include "Pointer.h"
+#include "pointer.h"
 
 #include "gamedata.h"
 
+PartitionManager* PartitionManager::singleton = nullptr;
+
 PartitionManager::PartitionManager()
 {
+	singleton = this;
+
 	p_highlightedPartition = nullptr;
 	m_viewLevel = 0;
 	m_debugVisible = true;
@@ -69,7 +73,7 @@ void PartitionManager::Draw(DrawData* _DD)
 
 void PartitionManager::HighlightPartition()
 {
-	Partition* p = m_partitionMethods[(int)m_activeMethod]->FindPartition(p_pointer->GetPos(),m_viewLevel);
+	Partition* p = m_partitionMethods[(int)m_activeMethod]->FindPartition(Pointer::Singleton()->GetPos(),m_viewLevel);
 	if (p != p_highlightedPartition)
 	{
 		if (p)
@@ -97,6 +101,19 @@ void PartitionManager::RebuildPartition()
 {
 	UnHighlightPartition();
 	m_partitionMethods[(int)m_activeMethod]->Rebuild(p_allPartitionObjects);
+}
+
+void PartitionManager::DeletePoints()
+{
+	UnHighlightPartition();
+	m_partitionMethods[(int)m_activeMethod]->Clear();
+	for (list<PartitionObject*>::iterator it = p_allPartitionObjects.begin(); it != p_allPartitionObjects.end(); )
+	{
+		(*it)->GetGameObject()->RemoveFromList();
+		delete (*it)->GetGameObject();
+		it = p_allPartitionObjects.begin();
+	}
+	p_allPartitionObjects.clear();
 }
 
 void PartitionManager::SetActiveMethod(PartitionMethods _method)

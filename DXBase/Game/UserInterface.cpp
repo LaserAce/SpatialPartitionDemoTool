@@ -3,11 +3,10 @@
 #include "gamedata.h"
 #include <windows.h>
 #include "VBShape.h"
+#include "Pointer.h"
 
-UserInterface::UserInterface(PartitionManager* _man, GameObject* _pointer)
+UserInterface::UserInterface()
 {
-	p_partitionManager = _man;
-	p_pointer = _pointer;
 	m_method = INTERFACE_POINT;
 	m_wireRadius = new VBShape();
 	m_wireRadius->InitialiseShape("WireCircle2D");
@@ -32,6 +31,9 @@ void UserInterface::SetupTwBars()
 
 	AdjustSize();
 
+	TwAddButton(leftUI, "Rebuild", RebuildPartition, nullptr, " label='Rebuild Partition' ");
+	TwAddButton(leftUI, "DeletePoints", DeletePoints, nullptr, " label='Delete All Points' ");
+
 	//Define a tweak bar enumerator based on an actual enumerator
 	TwEnumVal methods[MAX_METHODS] =
 	{
@@ -42,9 +44,9 @@ void UserInterface::SetupTwBars()
 		{ R_TREE, "R-tree" },
 	};
 	TwType methodType = TwDefineEnum("MethodType", methods, MAX_METHODS);
-	TwAddVarCB(leftUI, "Method", methodType, SetActiveMethod, GetActiveMethod, p_partitionManager, " label='Partitioning Method' ");
-	TwAddVarRW(leftUI, "ViewLevel", TW_TYPE_INT32, p_partitionManager->GetViewLevel(), " min=0 max=100 label='View Level' ");
-	TwAddVarRW(leftUI, "DebugVisible", TW_TYPE_BOOLCPP, p_partitionManager->GetDebugVisible(), " label='Partitions Visible' ");
+	TwAddVarCB(leftUI, "Method", methodType, SetActiveMethod, GetActiveMethod, PartitionManager::Singleton(), " label='Partitioning Method' ");
+	TwAddVarRW(leftUI, "ViewLevel", TW_TYPE_INT32, PartitionManager::Singleton()->GetViewLevel(), " min=0 max=100 label='View Level' ");
+	TwAddVarRW(leftUI, "DebugVisible", TW_TYPE_BOOLCPP, PartitionManager::Singleton()->GetDebugVisible(), " label='Partitions Visible' ");
 
 	TwEnumVal interfaceMethods[MAX_INTERFACE_METHODS] =
 	{
@@ -64,6 +66,16 @@ void UserInterface::AdjustSize()
 	m_size = 0.15;
 	int barSize[2] = { (int)((float)m_winSize.right * m_size), m_winSize.bottom };
 	TwSetParam(leftUI, NULL, "size", TW_PARAM_INT32, 2, barSize);
+}
+
+void TW_CALL UserInterface::RebuildPartition(void* _clientData)
+{
+	PartitionManager::Singleton()->RebuildPartition();
+}
+
+void TW_CALL UserInterface::DeletePoints(void* _clientData)
+{
+	PartitionManager::Singleton()->DeletePoints();
 }
 
 void TW_CALL UserInterface::SetActiveMethod(const void *value, void *clientData)
@@ -110,13 +122,13 @@ void UserInterface::Tick(GameData* _GD)
 
 		if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
 		{
-			p_partitionManager->UnHighlightPartition();
+			PartitionManager::Singleton()->UnHighlightPartition();
 			if (m_pointsToSpawn == 1)
 			{
 				VBShape* p = new VBShape();
 				p->InitialiseShape("WireDiamond2D");
 				p->SetScale(0.75);
-				p->SetPos(p_pointer->GetPos());
+				p->SetPos(Pointer::Singleton()->GetPos());
 				p->NewPartitionObject();
 				p->InsertToList();
 			}
@@ -128,12 +140,12 @@ void UserInterface::Tick(GameData* _GD)
 					p->InitialiseShape("WireDiamond2D");
 					p->SetScale(0.75);
 				
-					Vector3 pos = p_pointer->GetPos();
+					Vector3 pos = Pointer::Singleton()->GetPos();
 					float a, b, c;
 					while (true)
 					{
-						a = (rand() % ((2 * m_pointsRange) + 1)) - m_pointsRange;
-						b = (rand() % ((2 * m_pointsRange) + 1)) - m_pointsRange;
+						a = (float)(rand() % ((2 * m_pointsRange) + 1)) - m_pointsRange;
+						b = (float)(rand() % ((2 * m_pointsRange) + 1)) - m_pointsRange;
 						c = a * a + b * b;
 						if (c >= 0 && c <= m_pointsRange * m_pointsRange)
 						{
@@ -148,13 +160,13 @@ void UserInterface::Tick(GameData* _GD)
 					p->InsertToList();
 				}
 			}
-			p_partitionManager->HighlightPartition();
+			PartitionManager::Singleton()->HighlightPartition();
 		}
 	}
 	if (m_pointsToSpawn > 1)
 	{
-		m_wireRadius->SetPos(p_pointer->GetPos());
-		m_wireRadius->SetScale(m_pointsRange);
+		m_wireRadius->SetPos(Pointer::Singleton()->GetPos());
+		m_wireRadius->SetScale((float)m_pointsRange);
 		m_wireRadius->Tick(_GD);
 	}
 }

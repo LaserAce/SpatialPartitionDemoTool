@@ -96,13 +96,13 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_GameObjects.push_back(partitionManager);
 	PartitionObject::s_partitionManager = partitionManager;
 
-	Pointer* p = new Pointer(m_Cam);
+	Pointer* p = new Pointer();
+	p->SetCamera(m_Cam);
 	p->InitialiseShape("WireDiamond3D");
 	p->SetScale(5);
 	m_GameObjects.push_back(p);
-	partitionManager->SetPointer(p);
 
-	m_UI = new UserInterface(partitionManager, p);
+	m_UI = new UserInterface();
 	m_GameObjects.push_back(m_UI);
 
 	for (int i = 0; i < 25; ++i)
@@ -114,7 +114,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 		int randy = (rand() % 401) - 200;
 		s->SetPos(Vector3((float)randx, (float)randy, 0.0f));
 		s->NewPartitionObject();
-		m_GameObjects.push_back(s);
+		s->InsertToList();
 	}
 
 	

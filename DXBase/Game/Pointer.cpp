@@ -1,9 +1,11 @@
 #include "Pointer.h"
 #include "camera.h"
 
-Pointer::Pointer(Camera* _cam)
+Pointer* Pointer::singleton = nullptr;
+
+Pointer::Pointer()
 {
-	p_cam = _cam;
+	singleton = this;
 	m_defaultColour = Color(2, 0.2, 0.2);
 	m_currentColour = m_defaultColour;
 }

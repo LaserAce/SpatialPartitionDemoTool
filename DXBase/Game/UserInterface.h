@@ -20,11 +20,13 @@ enum InterfaceMethod
 class UserInterface : public GameObject
 {
 public:
-	UserInterface(PartitionManager* _man, GameObject* _pointer);
+	UserInterface();
 	virtual ~UserInterface();
 	void SetupTwBars();
 	void AdjustSize();
 
+	static void TW_CALL RebuildPartition(void* _clientData);
+	static void TW_CALL DeletePoints(void* _clientData);
 	static void TW_CALL SetActiveMethod(const void *value, void *clientData);
 	static void TW_CALL GetActiveMethod(void *value, void *clientData);
 	static void TW_CALL SetInterfaceMethod(const void *value, void *clientData);
@@ -48,9 +50,6 @@ protected:
 	float m_size;
 
 	InterfaceMethod m_method;
-
-	PartitionManager* p_partitionManager;
-
 	
 	void AddVarCB(TwBar* _bar, const char* _name, TwType _type, TwSetVarCallback _setCallback, TwGetVarCallback _getCallback, void* _clientData, const char* _def, list<const char*>* _list);
 	void AddVarRW(TwBar* _bar, const char* _name, TwType _type, void* _var, const char* _def, list<const char*>* _list);
@@ -61,7 +60,6 @@ protected:
 	int m_pointsRange = 10;
 
 	RECT m_winSize;
-	GameObject* p_pointer;
 	VBShape* m_wireRadius;
 };
 

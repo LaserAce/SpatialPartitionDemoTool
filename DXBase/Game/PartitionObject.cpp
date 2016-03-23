@@ -14,7 +14,10 @@ PartitionObject::~PartitionObject()
 {
 	p_gameObject->SetPartitionObject(nullptr);
 	s_partitionManager->RemoveFromManagerList(it_managerLocation);
-	Remove();
+	if (p_partition)
+	{
+		Remove();
+	}
 }
 
 void PartitionObject::Insert()

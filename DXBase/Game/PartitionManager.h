@@ -10,7 +10,6 @@ using std::vector;
 using std::list;
 
 class Partition;
-class Pointer;
 
 class PartitionManager : public GameObject
 {
@@ -18,12 +17,13 @@ public:
 	PartitionManager();
 	~PartitionManager();
 
+	static PartitionManager* Singleton() { return singleton; }
+
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);
 
 	void RebuildPartition();
-
-	void SetPointer(Pointer* _pointer){ p_pointer = _pointer; }
+	void DeletePoints();
 
 	Partition* GetCurrentRoot();
 	list<PartitionObject*>::iterator AddToManagerList(PartitionObject* _object);
@@ -37,13 +37,13 @@ public:
 	void UnHighlightPartition();
 	void HighlightPartition();
 
-protected:
 private:
+	static PartitionManager* singleton;
+
 	vector<Partition*> m_partitionMethods;
 	PartitionMethods m_activeMethod;
 	int m_viewLevel;
 	bool m_debugVisible;
-	Pointer* p_pointer;
 	Partition* p_highlightedPartition;
 	
 

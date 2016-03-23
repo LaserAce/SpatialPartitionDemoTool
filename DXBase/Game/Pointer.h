@@ -11,17 +11,18 @@ class Camera;
 class Pointer : public VBShape
 {
 public:
-	//Constructor
-	Pointer(Camera* _cam);
-	//Deconstructor
+	Pointer();
 	virtual ~Pointer();
 
-	//Tick
+	static Pointer* Singleton() { return singleton; }
+
 	virtual void Tick(GameData* _GD);
-	//Draw
 	virtual void Draw(DrawData* _DD);
 
+	void SetCamera(Camera* _cam) { p_cam = _cam; }
+
 protected:
+	static Pointer* singleton;
 	void Trace();
 	Camera* p_cam;
 	

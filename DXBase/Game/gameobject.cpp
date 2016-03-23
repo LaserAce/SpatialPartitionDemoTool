@@ -22,7 +22,10 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-
+	if (p_partitionObject)
+	{
+		delete p_partitionObject;
+	}
 }
 
 void GameObject::Tick(GameData* _GD)
