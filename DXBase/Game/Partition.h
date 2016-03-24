@@ -7,6 +7,8 @@ using std::list;
 
 class PartitionObject;
 class VBShape;
+struct StatisticTest;
+
 class Partition : public GameObject
 {
 public:
@@ -23,16 +25,31 @@ public:
 	virtual void Rebuild(list<PartitionObject*> _objects) = 0;
 	virtual void Rebuild() = 0;
 
+	virtual void Test(StatisticTest* _test)= 0;
+	void Reset();
+
 	VBShape* GetOutline(){ return m_outline; }
 	virtual void HighlightObjects(Color _col);
 	virtual void UnHighlightObjects();
 
+	bool ShapeQuery(Vector2 _upperLeft, Vector2 _lowerRight);
+
+	int* GetMaxObjects() { return &m_maxObjects; }
+	int* GetMaxLevels() { return &m_maxLevels; }
+
 protected:
 	list<PartitionObject*> m_objects;   //The objects that a partition holds
+	int m_defaultMaxObjects = 10;
+	int m_defaultMaxLevels = 5;
 	int m_maxObjects = 10;   //Minimum number of objects a partition can hold before it tries to split
 	int m_maxLevels = 5;   //Maximum level of splitting that can happen
 	int m_level = 0;   //The starting level
 	VBShape* m_outline;
+
+	bool PointQuery(Vector3 _pos, Vector2 _upperLeft, Vector2 _lowerRight);
+	
+	Vector2 m_upperLeft;
+	Vector2 m_lowerRight;
 private:
 	
 	

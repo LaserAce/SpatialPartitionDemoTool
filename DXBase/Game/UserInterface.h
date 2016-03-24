@@ -25,21 +25,31 @@ public:
 
 	static UserInterface* Singleton() { return singleton; }
 
-	void SetupTwBars();
+	void SetupTwBar();
 	void AdjustSize();
 
 	static void TW_CALL RebuildPartition(void* _clientData);
+	static void TW_CALL ResetPartition(void* _clientData);
 	static void TW_CALL DeletePoints(void* _clientData);
+
+	static void TW_CALL Test(void* _clientData);
+
 	static void TW_CALL SetActiveMethod(const void *value, void *clientData);
 	static void TW_CALL GetActiveMethod(void *value, void *clientData);
 	static void TW_CALL SetInterfaceMethod(const void *value, void *clientData);
 	static void TW_CALL GetInterfaceMethod(void *value, void *clientData);
+	static void TW_CALL SetHighlight(const void *value, void *clientData);
+	static void TW_CALL GetHighlight(void *value, void *clientData);
 
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);
 
 	InterfaceMethod* GetInterfaceMehod(){ return &m_method; }
 	void SetInterfaceMethod(InterfaceMethod _method){ m_method = _method; }
+	VBShape* GetQueryBox() { return queryShape; }
+
+	int* GetMaxObjects() { return &m_maxObjects; }
+	int* GetMaxLevels() { return &m_maxLevels; }
 
 	void RemoveVariables(list<const char*>* _variables);
 
@@ -62,9 +72,10 @@ protected:
 	bool PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point);
 
 	TwBar* leftUI;
-	TwBar* rightUI;
 	//lower number takes up more space on screen
 	float m_size;
+	Vector2 upperLeft;
+	Vector2 lowerRight;
 
 	InterfaceMethod m_method;
 	
@@ -75,6 +86,8 @@ protected:
 
 	int m_pointsToSpawn = 1;
 	int m_pointsRange = 10;
+	int m_maxObjects = 0;
+	int m_maxLevels = 0;
 
 	RECT m_winSize;
 	VBShape* m_wireRadius;

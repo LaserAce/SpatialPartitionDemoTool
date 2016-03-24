@@ -16,6 +16,8 @@ public:
 	virtual Partition* FindPartition(Vector3 _pos, int _level);
 	virtual void Rebuild(list<PartitionObject*> _objects);
 	virtual void Rebuild();
+	virtual void Test(StatisticTest* _test);
+
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);
 protected:

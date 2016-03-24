@@ -70,10 +70,6 @@ void VBShape::Tick(GameData* _GD)
 }
 void VBShape::Draw(DrawData* _DD)
 {
-	if (m_topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
-	{
-		int g = 2;
-	}
 	//Here we update the constant buffer and feed in the color of our object "currColor"
 	((ConstantBuffer*)m_pCB)->view = _DD->cam->GetView().Transpose();
 	((ConstantBuffer*)m_pCB)->projection = _DD->cam->GetProj().Transpose();

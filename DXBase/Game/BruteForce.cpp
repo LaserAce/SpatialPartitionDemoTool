@@ -2,14 +2,18 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
+#include "StatisticTest.h"
 
 BruteForce::BruteForce()
 {
+	m_defaultMaxObjects = 0;
+	m_defaultMaxLevels = 0;
+	
+	m_maxLevels = m_defaultMaxLevels;
+	m_maxObjects = m_defaultMaxObjects;
+	
 	m_parent = nullptr;
 	m_outline = nullptr;
-	
-	m_maxObjects = 0;
-	m_maxLevels = 0;
 }
 
 BruteForce::~BruteForce()
@@ -71,6 +75,18 @@ void BruteForce::Rebuild(list<PartitionObject*> _objects)
 void BruteForce::Rebuild()
 {
 
+}
+
+void BruteForce::Test(StatisticTest* _test)
+{
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			++_test->pointsFound;
+		}
+		++_test->numberChecks;
+	}
 }
 
 void BruteForce::Tick(GameData* _GD)

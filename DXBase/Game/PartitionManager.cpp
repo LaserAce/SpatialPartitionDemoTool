@@ -15,14 +15,15 @@ PartitionManager::PartitionManager()
 	singleton = this;
 
 	p_highlightedPartition = nullptr;
-	m_viewLevel = 0;
+	m_viewLevel = 1;
 	m_debugVisible = true;
+	m_highlight = true;
 
 	m_activeMethod = GRID;
 	m_partitionMethods.push_back(new BruteForce());
-	m_partitionMethods.push_back(new Grid(Vector3(), Vector3(200, 200, 1), 10, 0, nullptr));
-	m_partitionMethods.push_back(new Quadtree(Vector3(), 200, 0, nullptr));
-	m_partitionMethods.push_back(new KDtree(Vector3(), Vector3(200,200, 1), true, 0, nullptr));
+	m_partitionMethods.push_back(new Grid(Vector3(), Vector3(200, 200, 1), 10, 0, 0, 1));
+	m_partitionMethods.push_back(new Quadtree(Vector3(), 200, 0, 10, 5));
+	m_partitionMethods.push_back(new KDtree(Vector3(), Vector3(200,200, 1), true, 0, 1, 100));
 }
 
 PartitionManager::~PartitionManager()
@@ -69,11 +70,16 @@ void PartitionManager::Draw(DrawData* _DD)
 		{
 			p_highlightedPartition->Draw(_DD);
 		}
+		
 	}
 }
 
 void PartitionManager::HighlightPartition()
 {
+	if (!m_highlight)
+	{
+		return;
+	}
 	Partition* p = m_partitionMethods[(int)m_activeMethod]->FindPartition(Pointer::Singleton()->GetPos(),m_viewLevel);
 	if (p != p_highlightedPartition)
 	{
@@ -91,6 +97,10 @@ void PartitionManager::HighlightPartition()
 
 void PartitionManager::UnHighlightPartition()
 {
+	if (!m_highlight)
+	{
+		return;
+	}
 	if (p_highlightedPartition)
 	{
 		p_highlightedPartition->UnHighlightObjects();
@@ -104,6 +114,12 @@ void PartitionManager::RebuildPartition()
 	m_partitionMethods[(int)m_activeMethod]->Rebuild(p_allPartitionObjects);
 }
 
+void PartitionManager::ResetPartition()
+{
+	m_partitionMethods[(int)m_activeMethod]->Reset();
+	RebuildPartition();
+}
+
 void PartitionManager::DeletePoints()
 {
 	UnHighlightPartition();
@@ -115,6 +131,12 @@ void PartitionManager::DeletePoints()
 		it = p_allPartitionObjects.begin();
 	}
 	p_allPartitionObjects.clear();
+}
+
+StatisticTest* PartitionManager::Test(StatisticTest* _test)
+{
+	m_partitionMethods[(int)m_activeMethod]->Test(_test);
+	return _test;
 }
 
 void PartitionManager::SetActiveMethod(PartitionMethods _method)
@@ -139,4 +161,23 @@ void PartitionManager::SetViewLevel(int _i)
 int* PartitionManager::GetViewLevel()
 {
 	return &m_viewLevel;
+}
+
+string PartitionManager::GetCurrentPartitionName()
+{
+	switch (m_activeMethod)
+	{
+	case NONE:
+		return "No Method";
+	case GRID:
+		return "Grid";
+	case QUADTREE:
+		return "Quadtree";
+	case KD_TREE:
+		return "KDtree";
+	case R_TREE:
+		return "Rtree";
+	default:
+		return "Error: Method Not Found";
+	}
 }

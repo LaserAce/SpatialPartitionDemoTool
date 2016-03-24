@@ -6,10 +6,13 @@
 
 #include <vector>
 #include <list>
+#include <string>
 using std::vector;
 using std::list;
+using std::string;
 
 class Partition;
+struct StatisticTest;
 
 class PartitionManager : public GameObject
 {
@@ -33,9 +36,13 @@ public:
 	PartitionMethods* GetActiveMethod();
 	void SetViewLevel(int _i);
 	int* GetViewLevel();
-	bool* GetDebugVisible(){ return &m_debugVisible; };
+	bool* GetDebugVisible(){ return &m_debugVisible; }
+	bool* GetHighlight() { return &m_highlight; }
 	void UnHighlightPartition();
 	void HighlightPartition();
+	StatisticTest* Test(StatisticTest* _test);
+	string GetCurrentPartitionName();
+	void ResetPartition();
 
 private:
 	static PartitionManager* singleton;
@@ -44,6 +51,7 @@ private:
 	PartitionMethods m_activeMethod;
 	int m_viewLevel;
 	bool m_debugVisible;
+	bool m_highlight;
 	Partition* p_highlightedPartition;
 	
 

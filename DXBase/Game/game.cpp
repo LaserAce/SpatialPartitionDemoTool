@@ -16,6 +16,7 @@
 #include "PartitionObject.h"
 #include "PartitionManager.h"
 #include "UserInterface.h"
+#include "StatisticManager.h"
 
 
 
@@ -105,7 +106,10 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_UI = new UserInterface();
 	m_GameObjects.push_back(m_UI);
 
-	for (int i = 0; i < 25; ++i)
+	m_SM = new StatisticManager();
+	m_GameObjects.push_back(m_SM);
+
+	for (int i = 0; i < 500; ++i)
 	{
 		VBShape* s = new VBShape();
 		s->InitialiseShape("WireDiamond2D");
@@ -160,7 +164,8 @@ Game::~Game()
 
 void Game::InitAntTweak()
 {
-	m_UI->SetupTwBars();
+	m_UI->SetupTwBar();
+	m_SM->SetupTwBar();
 }
 
 bool Game::update()

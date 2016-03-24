@@ -9,7 +9,7 @@ using std::vector;
 class KDtree : public Partition
 {
 public:
-	KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, KDtree* _parent);
+	KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, int _maxObjects, int _maxLevels);
 	~KDtree();
 	virtual void Insert(PartitionObject* _object);
 	virtual void Remove(PartitionObject* _object);
@@ -19,6 +19,8 @@ public:
 	virtual Partition* FindPartition(Vector3 _pos, int _level);
 	virtual void Rebuild(list<PartitionObject*> _objects);
 	virtual void Rebuild();
+	virtual void Test(StatisticTest* _test);
+
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);
 

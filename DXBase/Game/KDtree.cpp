@@ -2,11 +2,17 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
+#include "StatisticTest.h"
 
-KDtree::KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, KDtree* _parent)
+KDtree::KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, int _maxObjects, int _maxLevels)
 {
+	m_defaultMaxObjects = 1;
+	m_defaultMaxLevels = 100;
+
+	m_maxLevels = _maxLevels;
+	m_maxObjects = _maxObjects;
+
 	m_level = _level;
-	m_parent = _parent;
 	m_verticalSplit = _split;
 
 	m_pos = _centre;
@@ -18,8 +24,8 @@ KDtree::KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, KDtre
 	m_outline->SetScale(m_extents);
 	m_outline->Tick(nullptr);
 
-	m_maxObjects = 1;
-	m_maxLevels = 100;
+	m_upperLeft = Vector2(_centre.x - _extents.x, _centre.y + _extents.y);
+	m_lowerRight = Vector2(_centre.x + _extents.x, _centre.y - _extents.y);
 }
 
 KDtree::~KDtree()
@@ -119,19 +125,19 @@ void KDtree::Split()
 	{
 		Vector3 centre = Vector3(((m_pos.x - m_extents.x) + split) / 2, m_pos.y, 1.0f);
 		Vector3 extents = Vector3(split - centre.x, m_extents.y, 1.0f);
-		m_left_top = new KDtree(centre,extents,false, m_level+1, this);
+		m_left_top = new KDtree(centre,extents,false, m_level+1, m_maxObjects, m_maxLevels);
 		centre = Vector3(((m_pos.x + m_extents.x) + split) / 2, m_pos.y, 1.0f);
 		extents = Vector3(centre.x - split, m_extents.y, 1.0f);
-		m_right_bottom = new KDtree(centre, extents, false, m_level + 1, this);
+		m_right_bottom = new KDtree(centre, extents, false, m_level + 1, m_maxObjects, m_maxLevels);
 	}
 	else
 	{
 		Vector3 centre = Vector3(m_pos.x, ((m_pos.y - m_extents.y) + split) / 2, 1.0f);
 		Vector3 extents = Vector3(m_extents.x, split - centre.y, 1.0f);
-		m_left_top = new KDtree(centre, extents, true, m_level + 1, this);
+		m_left_top = new KDtree(centre, extents, true, m_level + 1, m_maxObjects, m_maxLevels);
 		centre = Vector3(m_pos.x, ((m_pos.y + m_extents.y) + split) / 2, 1.0f);
 		extents = Vector3(m_extents.x, centre.y - split, 1.0f);
-		m_right_bottom = new KDtree(centre, extents, true, m_level + 1, this);
+		m_right_bottom = new KDtree(centre, extents, true, m_level + 1, m_maxObjects, m_maxLevels);
 	}
 }
 
@@ -201,7 +207,29 @@ void KDtree::Rebuild()
 	
 }
 
-
+void KDtree::Test(StatisticTest* _test)
+{
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			++_test->pointsFound;
+		}
+		++_test->numberChecks;
+	}
+	if (m_left_top)
+	{
+		if (m_left_top->ShapeQuery(_test->upperLeft, _test->lowerRight))
+		{
+			m_left_top->Test(_test);
+		}
+		if (m_right_bottom->ShapeQuery(_test->upperLeft, _test->lowerRight))
+		{
+			m_right_bottom->Test(_test);
+		}
+	}
+	++_test->nodesTravelled;
+}
 
 void KDtree::Tick(GameData* _GD)
 {

@@ -4,6 +4,9 @@
 #include <windows.h>
 #include "VBShape.h"
 #include "Pointer.h"
+#include "StatisticManager.h"
+#include "StatisticTest.h"
+#include "Partition.h"
 
 UserInterface* UserInterface::singleton = nullptr;
 
@@ -18,7 +21,7 @@ UserInterface::UserInterface()
 
 UserInterface::~UserInterface()
 {
-	TwDeleteAllBars();
+	TwDeleteBar(leftUI);
 	delete m_wireRadius;
 	if (queryShape)
 	{
@@ -26,7 +29,7 @@ UserInterface::~UserInterface()
 	}
 }
 
-void UserInterface::SetupTwBars()
+void UserInterface::SetupTwBar()
 {
 	leftUI = TwNewBar("leftUI");
 	TwDefine(" leftUI label='Parameter Interface' ");
@@ -36,18 +39,15 @@ void UserInterface::SetupTwBars()
 	TwDefine(" leftUI position='0 0' ");
 	TwDefine(" leftUI iconifiable=false ");
 
-	rightUI = TwNewBar("rightUI");
-	TwDefine(" rightUI label='Statistic Tracker' ");
-	TwDefine(" rightUI movable=false ");
-	TwDefine(" rightUI resizable=false ");
-	TwDefine(" rightUI color='122 122 122' ");
-	TwDefine(" rightUI iconifiable=false ");
-	
-
 	AdjustSize();
 
 	TwAddButton(leftUI, "Rebuild", RebuildPartition, nullptr, " label='Rebuild Partition' ");
+	TwAddButton(leftUI, "Reset", ResetPartition, nullptr, " label='Reset Partition' ");
+	TwAddVarRW(leftUI, "maxobjects", TW_TYPE_INT32, &m_maxObjects, " min=0 max=100 label='Max Objects' ");
+	TwAddVarRW(leftUI, "maxlevels", TW_TYPE_INT32, &m_maxLevels, " min=0 max=100 label='Max Levels' ");
 	TwAddButton(leftUI, "DeletePoints", DeletePoints, nullptr, " label='Delete All Points' ");
+
+	TwAddButton(leftUI, "Test", Test, nullptr, " label='Test' ");
 
 	//Define a tweak bar enumerator based on an actual enumerator
 	TwEnumVal methods[MAX_METHODS] =
@@ -62,6 +62,7 @@ void UserInterface::SetupTwBars()
 	TwAddVarCB(leftUI, "Method", methodType, SetActiveMethod, GetActiveMethod, PartitionManager::Singleton(), " label='Partitioning Method' ");
 	TwAddVarRW(leftUI, "ViewLevel", TW_TYPE_INT32, PartitionManager::Singleton()->GetViewLevel(), " min=0 max=100 label='View Level' ");
 	TwAddVarRW(leftUI, "DebugVisible", TW_TYPE_BOOLCPP, PartitionManager::Singleton()->GetDebugVisible(), " label='Partitions Visible' ");
+	TwAddVarCB(leftUI, "DebugHighlight", TW_TYPE_BOOLCPP, SetHighlight, GetHighlight, nullptr, " label='Partitions Highlight' ");
 
 	TwEnumVal interfaceMethods[MAX_INTERFACE_METHODS] =
 	{
@@ -71,6 +72,12 @@ void UserInterface::SetupTwBars()
 	TwType interfaceMethodType = TwDefineEnum("InterfaceMethodType", interfaceMethods, MAX_INTERFACE_METHODS);
 	TwAddVarCB(leftUI, "InterfaceMethod", interfaceMethodType, SetInterfaceMethod, GetInterfaceMethod, this, " label='Mode' ");
 	InterfacePointMethod();
+
+	upperLeft = Vector2((float)m_winSize.right * m_size,0.0f);
+	lowerRight = Vector2((float)m_winSize.right - ((float)m_winSize.right * m_size), (float)m_winSize.bottom);
+
+	*UserInterface::Singleton()->GetMaxObjects() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects();
+	*UserInterface::Singleton()->GetMaxLevels() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels();
 }
 
 void UserInterface::AdjustSize()
@@ -81,25 +88,53 @@ void UserInterface::AdjustSize()
 	m_size = 0.15;
 	int barSize[2] = { (int)((float)m_winSize.right * m_size), m_winSize.bottom };
 	TwSetParam(leftUI, NULL, "size", TW_PARAM_INT32, 2, barSize);
-	TwSetParam(rightUI, NULL, "size", TW_PARAM_INT32, 2, barSize);
-	int barPosition[3] = { (int)((float)m_winSize.right - ((float)m_winSize.right * m_size)), 0, 0 };
-	TwSetParam(rightUI, NULL, "position", TW_PARAM_INT32, 3, barPosition);
 }
 
 void TW_CALL UserInterface::RebuildPartition(void* _clientData)
 {
+	_clientData;
+	if (!*PartitionManager::Singleton()->GetActiveMethod() == GRID)
+	{
+		*PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects() = *UserInterface::Singleton()->GetMaxObjects();
+		*PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels() = *UserInterface::Singleton()->GetMaxLevels();
+	}
 	PartitionManager::Singleton()->RebuildPartition();
+}
+
+void TW_CALL UserInterface::ResetPartition(void* _clientData)
+{
+	_clientData;
+	PartitionManager::Singleton()->ResetPartition();
+	*UserInterface::Singleton()->GetMaxObjects() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects();
+	*UserInterface::Singleton()->GetMaxLevels() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels();
 }
 
 void TW_CALL UserInterface::DeletePoints(void* _clientData)
 {
+	_clientData;
 	PartitionManager::Singleton()->DeletePoints();
+}
+
+void TW_CALL UserInterface::Test(void* _clientData)
+{
+	_clientData;
+	VBShape* _shape = UserInterface::Singleton()->GetQueryBox();
+	if (_shape)
+	{
+		float _hori = _shape->GetScale().x;
+		float _vert = _shape->GetScale().y;
+		Vector3 _pos = _shape->GetPos();
+		StatisticManager::Singleton()->GenerateTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
+	}
+	//Otherwise do all points or pop up error message
 }
 
 void TW_CALL UserInterface::SetActiveMethod(const void *value, void *clientData)
 {
 	PartitionManager* man = static_cast<PartitionManager*>(clientData);
 	man->SetActiveMethod(*static_cast<const PartitionMethods*>(value));
+	*UserInterface::Singleton()->GetMaxObjects() = *man->GetCurrentRoot()->GetMaxObjects();
+	*UserInterface::Singleton()->GetMaxLevels() = *man->GetCurrentRoot()->GetMaxLevels();
 }
 
 void  TW_CALL UserInterface::GetActiveMethod(void *value, void *clientData)
@@ -123,10 +158,23 @@ void TW_CALL UserInterface::SetInterfaceMethod(const void *value, void *clientDa
 	}
 }
 
-void  TW_CALL UserInterface::GetInterfaceMethod(void *value, void *clientData)
+void  TW_CALL UserInterface::GetInterfaceMethod(void* _value, void* _clientData)
 {
-	UserInterface* ui = static_cast<UserInterface*>(clientData);
-	*(InterfaceMethod*)value = *ui->GetInterfaceMehod();
+	UserInterface* ui = static_cast<UserInterface*>(_clientData);
+	*(InterfaceMethod*)_value = *ui->GetInterfaceMehod();
+}
+
+void TW_CALL UserInterface::SetHighlight(const void *_value, void *_clientData)
+{
+	_clientData;
+	PartitionManager::Singleton()->UnHighlightPartition();
+	*PartitionManager::Singleton()->GetHighlight() = *(bool*)_value;
+}
+
+void  TW_CALL UserInterface::GetHighlight(void* _value, void* _clientData)
+{
+	_clientData;
+	*(bool*)_value = *PartitionManager::Singleton()->GetHighlight();
 }
 
 void UserInterface::Tick(GameData* _GD)
@@ -162,7 +210,7 @@ void UserInterface::MouseClick()
 	const HWND hDesktop = GetDesktopWindow();
 	ScreenToClient(hDesktop, &cursor);
 
-	if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
+	if (PointWithinBounds(upperLeft, lowerRight, Vector2((float)cursor.x, (float)cursor.y)))
 	{
 		switch (m_method)
 		{
@@ -215,10 +263,11 @@ void UserInterface::MouseClick()
 				if (!queryShape)
 				{
 					queryShape = new VBShape();
+					queryShape->InitialiseShape("SolidCube2D");
+					queryShape->SetColour(Color(1.0f, 0.0f, 0.0f, 0.25f));
 				}
-				queryShape->InitialiseShape("SolidCube2D");
-				queryShape->SetColour(Color(1.0f, 0.0f, 0.0f, 0.25f));
-				queryShape->SetScale(10.0f);
+				
+
 			}
 			
 			//BEGIN DRAWING QUERY BOX
@@ -237,7 +286,7 @@ void UserInterface::MouseHold()
 	switch (m_method)
 	{
 	case INTERFACE_QUERY:
-		if (!PointWithinBounds(Vector2(0.0f, 0.0f), Vector2((float)m_winSize.right * m_size, (float)m_winSize.bottom), Vector2((float)cursor.x, (float)cursor.y)))
+		if (PointWithinBounds(upperLeft, lowerRight, Vector2((float)cursor.x, (float)cursor.y)))
 		{
 			if (isDrawingQuery)
 			{

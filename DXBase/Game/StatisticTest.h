@@ -1,27 +1,26 @@
 #ifndef _STATISTIC_TEST_H_
 #define _STATISTIC_TEST_H_
 
+#include "SimpleMath.h"
 #include <string>
+#include <list>
 
+using namespace DirectX;
+using namespace SimpleMath;
 using std::string;
+using std::list;
 
-enum TestType
-{
-	TEST_ALL_POINTS,
-	TEST_QUERY_ZONE,
-	ALL_TESTS
-};
-
-class StatisticTest
+struct StatisticTest
 {
 public:
-	StatisticTest() { ++numTests; }
+	list<StatisticTest*>::iterator it_tests;
 
-	static int numTests;
+	Vector2 upperLeft;
+	Vector2 lowerRight;
+
 	int internalID;
 	string partitionName;
-	string testType;
-	float timeTaken;
+	int timeTaken;
 	int numberChecks;
 	int pointsFound;
 	int nodesTravelled;

@@ -23,6 +23,7 @@ struct GameData;
 struct DrawData;
 struct DrawData2D;
 class UserInterface;
+class StatisticManager;
 
 class VBShape;
 
@@ -68,6 +69,7 @@ protected:
 	DrawData2D* m_DD2D;
 
 	UserInterface* m_UI;
+	StatisticManager* m_SM;
 
 
 };

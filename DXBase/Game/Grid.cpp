@@ -2,11 +2,17 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
+#include "StatisticTest.h"
 
-Grid::Grid(Vector3 _centre, Vector3 _extents, int _splits, int _level, Grid* _parent)
+Grid::Grid(Vector3 _centre, Vector3 _extents, int _splits, int _level, int _maxObjects, int _maxLevels)
 {
+	m_defaultMaxObjects = 0;
+	m_defaultMaxLevels = 1;
+
+	m_maxLevels = _maxLevels;
+	m_maxObjects = _maxObjects;
+
 	m_level = _level;
-	m_parent = _parent;
 	m_splits = _splits;
 
 	m_pos = _centre;
@@ -18,9 +24,8 @@ Grid::Grid(Vector3 _centre, Vector3 _extents, int _splits, int _level, Grid* _pa
 	m_outline->SetScale(m_extents);
 	m_outline->Tick(nullptr);
 
-	m_maxObjects = 0;
-	m_maxLevels = 1;
-
+	m_upperLeft = Vector2(_centre.x - _extents.x, _centre.y + _extents.y);
+	m_lowerRight = Vector2(_centre.x + _extents.x, _centre.y - _extents.y);
 }
 
 Grid::~Grid()
@@ -163,7 +168,7 @@ void Grid::Split()
 			float y = (i * (m_extents.y / ((float)m_splits / 2))) + (m_extents.y / (float)m_splits) - m_extents.y;
 			float x = (j * (m_extents.x / ((float)m_splits / 2))) + (m_extents.x / (float)m_splits) - m_extents.x;
 			Vector3 extents = Vector3(m_extents.x / (float)m_splits, m_extents.y / (float)m_splits, m_extents.z);
-			m_grids.push_back(new Grid(Vector3(x,y,0.0f),extents,m_splits,m_level+1,this));
+			m_grids.push_back(new Grid(Vector3(x + m_pos.x,y + m_pos.y,0.0f),extents,m_splits,m_level+1, m_maxObjects, m_maxLevels));
 		}
 	}
 }
@@ -239,7 +244,25 @@ void Grid::Rebuild()
 
 }
 
-
+void Grid::Test(StatisticTest* _test)
+{
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			++_test->pointsFound;
+		}
+		++_test->numberChecks;
+	}
+	for (int i = 0; i < (int)m_grids.size(); ++i)
+	{
+		if (m_grids[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
+		{
+			m_grids[i]->Test(_test);
+		}
+	}
+	++_test->nodesTravelled;
+}
 
 void Grid::Tick(GameData* _GD)
 {

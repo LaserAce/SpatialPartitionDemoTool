@@ -2,14 +2,20 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
+#include "StatisticTest.h"
 
-Quadtree::Quadtree(Vector3 _centre, float _halfWidth, int _level, Quadtree* _parent)
+Quadtree::Quadtree(Vector3 _centre, float _halfWidth, int _level, int _maxObjects, int _maxLevels)
 {
+	m_defaultMaxObjects = 10;
+	m_defaultMaxLevels = 5;
+
+	m_maxLevels = _maxLevels;
+	m_maxObjects = _maxObjects;
+
 	m_pos = _centre;
 	m_halfWidth = _halfWidth;
 	m_level = _level;
 	m_nodes.resize((int)MAX_CORNERS);
-	m_parent = _parent;
 
 	m_outline = new VBShape();
 	m_outline->InitialiseShape("WireCube2D");
@@ -17,8 +23,8 @@ Quadtree::Quadtree(Vector3 _centre, float _halfWidth, int _level, Quadtree* _par
 	m_outline->SetScale(Vector3(_halfWidth,_halfWidth, 1));
 	m_outline->Tick(nullptr);
 
-	m_maxObjects = 10;
-	m_maxLevels = 5;
+	m_upperLeft = Vector2(_centre.x - _halfWidth, _centre.y + _halfWidth);
+	m_lowerRight = Vector2(_centre.x + _halfWidth, _centre.y - _halfWidth);
 }
 
 Quadtree::~Quadtree()
@@ -103,10 +109,10 @@ void Quadtree::Update(PartitionObject* _object)
 
 void Quadtree::Split()
 {
-	m_nodes[(int)TOP_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, this);
-	m_nodes[(int)TOP_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, this);
-	m_nodes[(int)BOTTOM_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, this);
-	m_nodes[(int)BOTTOM_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, this);
+	m_nodes[(int)TOP_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
+	m_nodes[(int)TOP_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
+	m_nodes[(int)BOTTOM_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
+	m_nodes[(int)BOTTOM_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
 }
 
 list<PartitionObject*> Quadtree::Retrieve(PartitionObject* _object)
@@ -178,6 +184,29 @@ void Quadtree::Rebuild()
 			}
 		}
 	}
+}
+
+void Quadtree::Test(StatisticTest* _test)
+{
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			++_test->pointsFound;
+		}
+		++_test->numberChecks;
+	}
+	if (m_nodes[0])
+	{
+		for (int i = 0; i < (int)MAX_CORNERS; ++i)
+		{
+			if (m_nodes[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
+			{
+				m_nodes[i]->Test(_test);
+			}
+		}
+	}
+	++_test->nodesTravelled;
 }
 
 void Quadtree::Tick(GameData* _GD)
