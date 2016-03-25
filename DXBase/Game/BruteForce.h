@@ -11,12 +11,12 @@ public:
 	virtual void Insert(PartitionObject* _object);
 	virtual void Remove(PartitionObject* _object);
 	virtual void Update(PartitionObject* _object);
-	virtual list<PartitionObject*> Retrieve(PartitionObject* _object);
 	virtual void Clear();
 	virtual Partition* FindPartition(Vector3 _pos, int _level);
-	virtual void Rebuild(list<PartitionObject*> _objects);
 	virtual void Rebuild();
-	virtual void Test(StatisticTest* _test);
+	
+	virtual void FindTest(FindPointTest* _test);
+	virtual list<PartitionObject*> CheckTest(CheckPointTest* _test);
 
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);

@@ -4,8 +4,8 @@
 #include <windows.h>
 #include "VBShape.h"
 #include "Pointer.h"
-#include "StatisticManager.h"
-#include "StatisticTest.h"
+#include "TestManager.h"
+#include "Test.h"
 #include "Partition.h"
 
 UserInterface* UserInterface::singleton = nullptr;
@@ -47,7 +47,9 @@ void UserInterface::SetupTwBar()
 	TwAddVarRW(leftUI, "maxlevels", TW_TYPE_INT32, &m_maxLevels, " min=0 max=100 label='Max Levels' ");
 	TwAddButton(leftUI, "DeletePoints", DeletePoints, nullptr, " label='Delete All Points' ");
 
-	TwAddButton(leftUI, "Test", Test, nullptr, " label='Test' ");
+	TwAddButton(leftUI, "findtest", FindTest, nullptr, " label='Find Test' ");
+	TwAddButton(leftUI, "checktest", CheckTest, nullptr, " label='Check Test' ");
+	TwAddVarRW(leftUI, "buildtest", TW_TYPE_BOOLCPP, TestManager::Singleton()->GetBuildTest(), " label='Generate Build Tests' ");
 
 	//Define a tweak bar enumerator based on an actual enumerator
 	TwEnumVal methods[MAX_METHODS] =
@@ -93,7 +95,7 @@ void UserInterface::AdjustSize()
 void TW_CALL UserInterface::RebuildPartition(void* _clientData)
 {
 	_clientData;
-	if (!*PartitionManager::Singleton()->GetActiveMethod() == GRID)
+	if (!(*PartitionManager::Singleton()->GetActiveMethod() == GRID))
 	{
 		*PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects() = *UserInterface::Singleton()->GetMaxObjects();
 		*PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels() = *UserInterface::Singleton()->GetMaxLevels();
@@ -115,7 +117,7 @@ void TW_CALL UserInterface::DeletePoints(void* _clientData)
 	PartitionManager::Singleton()->DeletePoints();
 }
 
-void TW_CALL UserInterface::Test(void* _clientData)
+void TW_CALL UserInterface::FindTest(void* _clientData)
 {
 	_clientData;
 	VBShape* _shape = UserInterface::Singleton()->GetQueryBox();
@@ -124,7 +126,21 @@ void TW_CALL UserInterface::Test(void* _clientData)
 		float _hori = _shape->GetScale().x;
 		float _vert = _shape->GetScale().y;
 		Vector3 _pos = _shape->GetPos();
-		StatisticManager::Singleton()->GenerateTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
+		TestManager::Singleton()->GenerateFindTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
+	}
+	//Otherwise do all points or pop up error message
+}
+
+void TW_CALL UserInterface::CheckTest(void* _clientData)
+{
+	_clientData;
+	VBShape* _shape = UserInterface::Singleton()->GetQueryBox();
+	if (_shape)
+	{
+		float _hori = _shape->GetScale().x;
+		float _vert = _shape->GetScale().y;
+		Vector3 _pos = _shape->GetPos();
+		TestManager::Singleton()->GenerateCheckTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
 	}
 	//Otherwise do all points or pop up error message
 }
@@ -132,7 +148,9 @@ void TW_CALL UserInterface::Test(void* _clientData)
 void TW_CALL UserInterface::SetActiveMethod(const void *value, void *clientData)
 {
 	PartitionManager* man = static_cast<PartitionManager*>(clientData);
+
 	man->SetActiveMethod(*static_cast<const PartitionMethods*>(value));
+
 	*UserInterface::Singleton()->GetMaxObjects() = *man->GetCurrentRoot()->GetMaxObjects();
 	*UserInterface::Singleton()->GetMaxLevels() = *man->GetCurrentRoot()->GetMaxLevels();
 }

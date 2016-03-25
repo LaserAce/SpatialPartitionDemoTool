@@ -4,7 +4,9 @@
 #include "Grid.h"
 #include "BruteForce.h"
 #include "PartitionObject.h"
-#include "pointer.h"
+#include "Pointer.h"
+#include "Test.h"
+#include "TestManager.h"
 
 #include "gamedata.h"
 
@@ -111,7 +113,17 @@ void PartitionManager::UnHighlightPartition()
 void PartitionManager::RebuildPartition()
 {
 	UnHighlightPartition();
-	m_partitionMethods[(int)m_activeMethod]->Rebuild(p_allPartitionObjects);
+	TestManager* _man = TestManager::Singleton();
+	if (*_man->GetBuildTest())
+	{
+		Test* _test = _man->BeginBuildTest();
+		m_partitionMethods[(int)m_activeMethod]->Rebuild(p_allPartitionObjects);
+		_man->EndBuildTest(_test);
+	}
+	else
+	{
+		m_partitionMethods[(int)m_activeMethod]->Rebuild(p_allPartitionObjects);
+	}
 }
 
 void PartitionManager::ResetPartition()
@@ -133,9 +145,24 @@ void PartitionManager::DeletePoints()
 	p_allPartitionObjects.clear();
 }
 
-StatisticTest* PartitionManager::Test(StatisticTest* _test)
+FindPointTest* PartitionManager::FindTest(FindPointTest* _test)
 {
-	m_partitionMethods[(int)m_activeMethod]->Test(_test);
+	m_partitionMethods[(int)m_activeMethod]->FindTest(_test);
+	return _test;
+}
+
+CheckPointTest* PartitionManager::CheckTest(CheckPointTest* _test)
+{
+	list<PartitionObject*> _checkPoints = m_partitionMethods[(int)m_activeMethod]->CheckTest(_test);
+	ULONGLONG timeAtBegin = GetTickCount64();
+	for (list<PartitionObject*>::iterator it = _checkPoints.begin(); it != _checkPoints.end(); ++it)
+	{
+		for (list<PartitionObject*>::iterator it2 = next(it); it2 != _checkPoints.end(); ++it2)
+		{
+			++_test->numberPointToPointTests;
+		}
+	}
+	_test->timeTaken = (int)(GetTickCount64() - timeAtBegin);
 	return _test;
 }
 

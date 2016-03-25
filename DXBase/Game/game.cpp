@@ -16,7 +16,7 @@
 #include "PartitionObject.h"
 #include "PartitionManager.h"
 #include "UserInterface.h"
-#include "StatisticManager.h"
+#include "TestManager.h"
 
 
 
@@ -106,8 +106,8 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_UI = new UserInterface();
 	m_GameObjects.push_back(m_UI);
 
-	m_SM = new StatisticManager();
-	m_GameObjects.push_back(m_SM);
+	m_TM = new TestManager();
+	m_GameObjects.push_back(m_TM);
 
 	for (int i = 0; i < 500; ++i)
 	{
@@ -165,7 +165,7 @@ Game::~Game()
 void Game::InitAntTweak()
 {
 	m_UI->SetupTwBar();
-	m_SM->SetupTwBar();
+	m_TM->SetupTwBar();
 }
 
 bool Game::update()

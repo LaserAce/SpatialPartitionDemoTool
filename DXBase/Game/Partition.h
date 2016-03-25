@@ -7,7 +7,8 @@ using std::list;
 
 class PartitionObject;
 class VBShape;
-struct StatisticTest;
+struct FindPointTest;
+struct CheckPointTest;
 
 class Partition : public GameObject
 {
@@ -16,16 +17,16 @@ public:
 	virtual void Insert(PartitionObject* _object) = 0;
 	virtual void Remove(PartitionObject* _object) = 0;
 	virtual void Update(PartitionObject* _object) = 0;
-	virtual list<PartitionObject*> Retrieve(PartitionObject* _object) = 0;
 	virtual void Clear() = 0;
 	virtual void Tick(GameData* _GD) = 0;
 	virtual void Draw(DrawData* _DD) = 0;
 	virtual Partition* FindPartition(Vector3 _pos, int _level) = 0;
 
-	virtual void Rebuild(list<PartitionObject*> _objects) = 0;
+	virtual void Rebuild(list<PartitionObject*> _objects);
 	virtual void Rebuild() = 0;
 
-	virtual void Test(StatisticTest* _test)= 0;
+	virtual void FindTest(FindPointTest* _test)= 0;
+	virtual list<PartitionObject*> CheckTest(CheckPointTest* _test) = 0;
 	void Reset();
 
 	VBShape* GetOutline(){ return m_outline; }

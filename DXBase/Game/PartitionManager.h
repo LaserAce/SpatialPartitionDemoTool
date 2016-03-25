@@ -12,7 +12,8 @@ using std::list;
 using std::string;
 
 class Partition;
-struct StatisticTest;
+struct FindPointTest;
+struct CheckPointTest;
 
 class PartitionManager : public GameObject
 {
@@ -40,7 +41,8 @@ public:
 	bool* GetHighlight() { return &m_highlight; }
 	void UnHighlightPartition();
 	void HighlightPartition();
-	StatisticTest* Test(StatisticTest* _test);
+	FindPointTest* FindTest(FindPointTest* _test);
+	CheckPointTest* CheckTest(CheckPointTest* _test);
 	string GetCurrentPartitionName();
 	void ResetPartition();
 

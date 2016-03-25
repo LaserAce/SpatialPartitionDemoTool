@@ -2,7 +2,7 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
-#include "StatisticTest.h"
+#include "Test.h"
 
 Grid::Grid(Vector3 _centre, Vector3 _extents, int _splits, int _level, int _maxObjects, int _maxLevels)
 {
@@ -173,13 +173,6 @@ void Grid::Split()
 	}
 }
 
-list<PartitionObject*> Grid::Retrieve(PartitionObject* _object)
-{
-	_object;
-	list<PartitionObject*> retrieve;
-	return retrieve;
-}
-
 //Clears away all objects and delete all children nodes
 void Grid::Clear()
 {
@@ -213,13 +206,6 @@ Partition* Grid::FindPartition(Vector3 _pos, int _level)
 	return this;
 }
 
-void Grid::Rebuild(list<PartitionObject*> _objects)
-{
-	Clear();
-	m_objects = _objects;
-	Rebuild();
-}
-
 void Grid::Rebuild()
 {
 	//Only try if can go down more levels
@@ -244,7 +230,7 @@ void Grid::Rebuild()
 
 }
 
-void Grid::Test(StatisticTest* _test)
+void Grid::FindTest(FindPointTest* _test)
 {
 	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
@@ -252,17 +238,40 @@ void Grid::Test(StatisticTest* _test)
 		{
 			++_test->pointsFound;
 		}
-		++_test->numberChecks;
+		++_test->numberPointChecks;
 	}
 	for (int i = 0; i < (int)m_grids.size(); ++i)
 	{
 		if (m_grids[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
 		{
-			m_grids[i]->Test(_test);
+			m_grids[i]->FindTest(_test);
 		}
+		++_test->numberNodeChecks;
 	}
 	++_test->nodesTravelled;
 }
+
+list<PartitionObject*> Grid::CheckTest(CheckPointTest* _test)
+{
+	list<PartitionObject*> _checkObjects;
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			_checkObjects.push_back(*it);
+		}
+	}
+	for (int i = 0; i < (int)m_grids.size(); ++i)
+	{
+		if (m_grids[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
+		{
+			list<PartitionObject*> _temp = m_grids[i]->CheckTest(_test);
+			_checkObjects.insert(_checkObjects.end(), _temp.begin(), _temp.end());
+		}
+	}
+	return _checkObjects;
+}
+
 
 void Grid::Tick(GameData* _GD)
 {

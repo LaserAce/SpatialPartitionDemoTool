@@ -2,7 +2,7 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
-#include "StatisticTest.h"
+#include "Test.h"
 
 BruteForce::BruteForce()
 {
@@ -38,13 +38,6 @@ void BruteForce::Update(PartitionObject* _object)
 	_object->s_partitionManager->GetCurrentRoot()->Insert(_object);
 }
 
-list<PartitionObject*> BruteForce::Retrieve(PartitionObject* _object)
-{
-	_object;
-	list<PartitionObject*> retrieve;
-	return retrieve;
-}
-
 //Clears away all objects and delete all children nodes
 void BruteForce::Clear()
 {
@@ -63,21 +56,12 @@ Partition* BruteForce::FindPartition(Vector3 _pos, int _level)
 	return nullptr;
 }
 
-void BruteForce::Rebuild(list<PartitionObject*> _objects)
-{
-	Clear();
-	for (list<PartitionObject*>::iterator it = _objects.begin(); it != _objects.end(); ++it)
-	{
-		AssignObject(*it);
-	}
-}
-
 void BruteForce::Rebuild()
 {
 
 }
 
-void BruteForce::Test(StatisticTest* _test)
+void BruteForce::FindTest(FindPointTest* _test)
 {
 	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
@@ -85,8 +69,21 @@ void BruteForce::Test(StatisticTest* _test)
 		{
 			++_test->pointsFound;
 		}
-		++_test->numberChecks;
+		++_test->numberPointChecks;
 	}
+}
+
+list<PartitionObject*> BruteForce::CheckTest(CheckPointTest* _test)
+{
+	list<PartitionObject*> _checkObjects;
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			_checkObjects.push_back(*it);
+		}
+	}
+	return _checkObjects;
 }
 
 void BruteForce::Tick(GameData* _GD)

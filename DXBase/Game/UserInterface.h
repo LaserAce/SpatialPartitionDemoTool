@@ -32,7 +32,9 @@ public:
 	static void TW_CALL ResetPartition(void* _clientData);
 	static void TW_CALL DeletePoints(void* _clientData);
 
-	static void TW_CALL Test(void* _clientData);
+	static void TW_CALL FindTest(void* _clientData);
+	static void TW_CALL CheckTest(void* _clientData);
+	
 
 	static void TW_CALL SetActiveMethod(const void *value, void *clientData);
 	static void TW_CALL GetActiveMethod(void *value, void *clientData);
@@ -66,6 +68,7 @@ protected:
 	void PositionQuery();
 	Vector3 queryPivot;
 	VBShape* queryShape = nullptr;
+	
 
 	bool isDrawingQuery = false;
 

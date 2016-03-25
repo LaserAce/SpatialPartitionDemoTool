@@ -2,7 +2,7 @@
 #include "PartitionManager.h"
 #include "PartitionObject.h"
 #include "VBShape.h"
-#include "StatisticTest.h"
+#include "Test.h"
 
 Quadtree::Quadtree(Vector3 _centre, float _halfWidth, int _level, int _maxObjects, int _maxLevels)
 {
@@ -115,13 +115,6 @@ void Quadtree::Split()
 	m_nodes[(int)BOTTOM_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
 }
 
-list<PartitionObject*> Quadtree::Retrieve(PartitionObject* _object)
-{
-	_object;
-	list<PartitionObject*> retrieve;
-	return retrieve;
-}
-
 //Clears away all objects and delete all children nodes
 void Quadtree::Clear()
 {
@@ -156,13 +149,6 @@ Partition* Quadtree::FindPartition(Vector3 _pos, int _level)
 	return this;
 }
 
-void Quadtree::Rebuild(list<PartitionObject*> _objects)
-{
-	Clear();
-	m_objects = _objects;
-	Rebuild();
-}
-
 void Quadtree::Rebuild()
 {
 	//Only try if can go down more levels
@@ -186,7 +172,7 @@ void Quadtree::Rebuild()
 	}
 }
 
-void Quadtree::Test(StatisticTest* _test)
+void Quadtree::FindTest(FindPointTest* _test)
 {
 	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
@@ -194,7 +180,7 @@ void Quadtree::Test(StatisticTest* _test)
 		{
 			++_test->pointsFound;
 		}
-		++_test->numberChecks;
+		++_test->numberPointChecks;
 	}
 	if (m_nodes[0])
 	{
@@ -202,11 +188,36 @@ void Quadtree::Test(StatisticTest* _test)
 		{
 			if (m_nodes[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
 			{
-				m_nodes[i]->Test(_test);
+				m_nodes[i]->FindTest(_test);
 			}
+			++_test->numberNodeChecks;
 		}
 	}
 	++_test->nodesTravelled;
+}
+
+list<PartitionObject*> Quadtree::CheckTest(CheckPointTest* _test)
+{
+	list<PartitionObject*> _checkObjects;
+	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (PointQuery((*it)->GetGameObject()->GetPos(), _test->upperLeft, _test->lowerRight))
+		{
+			_checkObjects.push_back(*it);
+		}
+	}
+	if (m_nodes[0])
+	{
+		for (int i = 0; i < (int)MAX_CORNERS; ++i)
+		{
+			if (m_nodes[i]->ShapeQuery(_test->upperLeft, _test->lowerRight))
+			{
+				list<PartitionObject*> _temp = m_nodes[i]->CheckTest(_test);
+				_checkObjects.insert(_checkObjects.end(), _temp.begin(), _temp.end());
+			}
+		}
+	}
+	return _checkObjects;
 }
 
 void Quadtree::Tick(GameData* _GD)

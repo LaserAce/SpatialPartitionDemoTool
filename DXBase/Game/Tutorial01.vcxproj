@@ -369,7 +369,7 @@
     <ClCompile Include="Pointer.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SolidCube.cpp" />
-    <ClCompile Include="StatisticManager.cpp" />
+    <ClCompile Include="TestManager.cpp" />
     <ClCompile Include="Tutorial01.cpp" />
     <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="VBGO.cpp" />
@@ -402,8 +402,8 @@
     <ClInclude Include="Quadtree.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="SolidCube.h" />
-    <ClInclude Include="StatisticManager.h" />
-    <ClInclude Include="StatisticTest.h" />
+    <ClInclude Include="TestManager.h" />
+    <ClInclude Include="Test.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="VBData.h" />
     <ClInclude Include="VBGO.h" />

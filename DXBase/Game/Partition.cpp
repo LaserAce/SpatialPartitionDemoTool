@@ -27,6 +27,16 @@ void Partition::AssignObject(PartitionObject* _object)
 	_object->SetPartitionIterator(prev(m_objects.end()));
 }
 
+void Partition::Rebuild(list<PartitionObject*> _objects)
+{
+	Clear();
+	for (list<PartitionObject*>::iterator it = _objects.begin(); it != _objects.end(); ++it)
+	{
+		AssignObject(*it);
+	}
+	Rebuild();
+}
+
 void Partition::Reset()
 {
 	m_maxObjects = m_defaultMaxObjects;
