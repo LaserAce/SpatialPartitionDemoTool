@@ -130,6 +130,12 @@
     <ClInclude Include="TestManager.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenMessage.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rtree.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tutorial01.rc">
@@ -202,6 +208,12 @@
     </ClCompile>
     <ClCompile Include="TestManager.cpp">
       <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenMessage.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rtree.cpp">
+      <Filter>Engine\SpatialPartitionSource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

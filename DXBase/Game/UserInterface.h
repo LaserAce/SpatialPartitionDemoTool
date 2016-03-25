@@ -68,11 +68,14 @@ protected:
 	void PositionQuery();
 	Vector3 queryPivot;
 	VBShape* queryShape = nullptr;
+	VBShape* frameShape = nullptr;
+	VBShape* backgroundShape = nullptr;
 	
 
 	bool isDrawingQuery = false;
 
 	bool PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point);
+	bool PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector3 _point);
 
 	TwBar* leftUI;
 	//lower number takes up more space on screen
@@ -84,6 +87,7 @@ protected:
 	
 	void AddVarCB(TwBar* _bar, const char* _name, TwType _type, TwSetVarCallback _setCallback, TwGetVarCallback _getCallback, void* _clientData, const char* _def, list<const char*>* _list);
 	void AddVarRW(TwBar* _bar, const char* _name, TwType _type, void* _var, const char* _def, list<const char*>* _list);
+	void AddButton(TwBar* _bar, const char* _name, TwButtonCallback _callback, void* _clientData, const char* _def, list<const char*>* _list);
 
 	list<const char*>  m_interfaceMethodVariables;
 

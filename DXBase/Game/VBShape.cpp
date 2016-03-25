@@ -13,9 +13,7 @@ VBMap VBShape::s_VBHolder;
 
 VBShape::VBShape()
 {
-	//m_colour = Color(20, 120, 0);
-	m_defaultColour = Color(0.2,1,0);
-	m_currentColour = m_defaultColour;
+	SetDefaultColour(Color(0.2,1,0));
 }
 
 VBShape::~VBShape()

@@ -17,6 +17,7 @@
 #include "PartitionManager.h"
 #include "UserInterface.h"
 #include "TestManager.h"
+#include "ScreenMessage.h"
 
 
 
@@ -83,7 +84,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_DD2D = new DrawData2D();
 	m_DD2D->m_Sprites.reset(new SpriteBatch(pd3dImmediateContext));
 	m_DD2D->m_Font.reset(new SpriteFont(_pd3dDevice, L"italic.spritefont"));
-		
+	
 	//create Draw Data
 	m_DD->pd3dImmediateContext = pd3dImmediateContext;
 	m_DD->states = m_States;
@@ -92,6 +93,9 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	VBGO::Init(_pd3dDevice);
 
 	VBShape::AddShapes(_pd3dDevice);
+
+	m_UI = new UserInterface();
+	m_GameObjects.push_back(m_UI);
 
 	PartitionManager* partitionManager = new PartitionManager();
 	m_GameObjects.push_back(partitionManager);
@@ -103,11 +107,10 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	p->SetScale(5);
 	m_GameObjects.push_back(p);
 
-	m_UI = new UserInterface();
-	m_GameObjects.push_back(m_UI);
-
 	m_TM = new TestManager();
 	m_GameObjects.push_back(m_TM);
+
+	m_GameObject2Ds.push_back(new ScreenMessage());
 
 	for (int i = 0; i < 500; ++i)
 	{
@@ -210,12 +213,13 @@ void Game::render(ID3D11DeviceContext* _pd3dImmediateContext)
 	{
 		(*it)->Draw(m_DD);
 	}
-
+	
 	// Draw sprite batch stuff
 	m_DD2D->m_Sprites->Begin();
-	
+
 	for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
 	{
+
 		(*it)->draw(m_DD2D);
 	}
 

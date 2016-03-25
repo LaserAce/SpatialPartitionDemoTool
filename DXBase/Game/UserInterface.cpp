@@ -7,6 +7,7 @@
 #include "TestManager.h"
 #include "Test.h"
 #include "Partition.h"
+#include "ScreenMessage.h"
 
 UserInterface* UserInterface::singleton = nullptr;
 
@@ -17,6 +18,18 @@ UserInterface::UserInterface()
 	m_wireRadius = new VBShape();
 	m_wireRadius->InitialiseShape("WireCircle2D");
 	m_wireRadius->SetScale(0);
+
+	frameShape = new VBShape();
+	frameShape->InitialiseShape("SolidCube2D");
+	frameShape->SetScale(202.5f);
+	frameShape->SetDefaultColour(Color(0.2, 1, 0));
+	frameShape->Tick(nullptr);
+
+	backgroundShape = new VBShape();
+	backgroundShape->InitialiseShape("SolidCube2D");
+	backgroundShape->SetScale(200);
+	backgroundShape->SetDefaultColour(Color(0.0f, 0.0f, 0.0f, 1.0f));
+	backgroundShape->Tick(nullptr);
 }
 
 UserInterface::~UserInterface()
@@ -41,16 +54,6 @@ void UserInterface::SetupTwBar()
 
 	AdjustSize();
 
-	TwAddButton(leftUI, "Rebuild", RebuildPartition, nullptr, " label='Rebuild Partition' ");
-	TwAddButton(leftUI, "Reset", ResetPartition, nullptr, " label='Reset Partition' ");
-	TwAddVarRW(leftUI, "maxobjects", TW_TYPE_INT32, &m_maxObjects, " min=0 max=100 label='Max Objects' ");
-	TwAddVarRW(leftUI, "maxlevels", TW_TYPE_INT32, &m_maxLevels, " min=0 max=100 label='Max Levels' ");
-	TwAddButton(leftUI, "DeletePoints", DeletePoints, nullptr, " label='Delete All Points' ");
-
-	TwAddButton(leftUI, "findtest", FindTest, nullptr, " label='Find Test' ");
-	TwAddButton(leftUI, "checktest", CheckTest, nullptr, " label='Check Test' ");
-	TwAddVarRW(leftUI, "buildtest", TW_TYPE_BOOLCPP, TestManager::Singleton()->GetBuildTest(), " label='Generate Build Tests' ");
-
 	//Define a tweak bar enumerator based on an actual enumerator
 	TwEnumVal methods[MAX_METHODS] =
 	{
@@ -61,10 +64,19 @@ void UserInterface::SetupTwBar()
 		{ R_TREE, "R-tree" },
 	};
 	TwType methodType = TwDefineEnum("MethodType", methods, MAX_METHODS);
-	TwAddVarCB(leftUI, "Method", methodType, SetActiveMethod, GetActiveMethod, PartitionManager::Singleton(), " label='Partitioning Method' ");
-	TwAddVarRW(leftUI, "ViewLevel", TW_TYPE_INT32, PartitionManager::Singleton()->GetViewLevel(), " min=0 max=100 label='View Level' ");
-	TwAddVarRW(leftUI, "DebugVisible", TW_TYPE_BOOLCPP, PartitionManager::Singleton()->GetDebugVisible(), " label='Partitions Visible' ");
-	TwAddVarCB(leftUI, "DebugHighlight", TW_TYPE_BOOLCPP, SetHighlight, GetHighlight, nullptr, " label='Partitions Highlight' ");
+	TwAddVarCB(leftUI, "Method", methodType, SetActiveMethod, GetActiveMethod, PartitionManager::Singleton(), " group='Spatial Partition Menu' label='Partitioning Method' ");
+	TwAddButton(leftUI, "Rebuild", RebuildPartition, nullptr, " group='Spatial Partition Menu' label='Rebuild Partition' ");
+	TwAddVarRW(leftUI, "maxobjects", TW_TYPE_INT32, &m_maxObjects, " group='Spatial Partition Menu' min=0 max=100 label='Max Objects' ");
+	TwAddVarRW(leftUI, "maxlevels", TW_TYPE_INT32, &m_maxLevels, "group='Spatial Partition Menu'  min=0 max=100 label='Max Levels' ");
+	TwAddButton(leftUI, "Reset", ResetPartition, nullptr, " group='Spatial Partition Menu' label='Reset Partition' ");
+
+	TwAddButton(leftUI, "findtest", FindTest, nullptr, " group='Test Menu' label='Find Test' ");
+	TwAddButton(leftUI, "checktest", CheckTest, nullptr, " group='Test Menu' label='Check Test' ");
+	TwAddVarRW(leftUI, "buildtest", TW_TYPE_BOOLCPP, TestManager::Singleton()->GetBuildTest(), " group='Test Menu' label='Generate Build Tests' ");
+
+	TwAddVarRW(leftUI, "ViewLevel", TW_TYPE_INT32, PartitionManager::Singleton()->GetViewLevel(), " group='Visuals Menu' min=0 max=100 label='View Level' ");
+	TwAddVarRW(leftUI, "DebugVisible", TW_TYPE_BOOLCPP, PartitionManager::Singleton()->GetDebugVisible(), " group='Visuals Menu' label='Partitions Visible' ");
+	TwAddVarCB(leftUI, "DebugHighlight", TW_TYPE_BOOLCPP, SetHighlight, GetHighlight, nullptr, " group='Visuals Menu' label='Partitions Highlight' ");
 
 	TwEnumVal interfaceMethods[MAX_INTERFACE_METHODS] =
 	{
@@ -72,7 +84,7 @@ void UserInterface::SetupTwBar()
 		{ INTERFACE_QUERY, "Query" }
 	};
 	TwType interfaceMethodType = TwDefineEnum("InterfaceMethodType", interfaceMethods, MAX_INTERFACE_METHODS);
-	TwAddVarCB(leftUI, "InterfaceMethod", interfaceMethodType, SetInterfaceMethod, GetInterfaceMethod, this, " label='Mode' ");
+	TwAddVarCB(leftUI, "InterfaceMethod", interfaceMethodType, SetInterfaceMethod, GetInterfaceMethod, this, " group='Mode Menu' label='Mode' ");
 	InterfacePointMethod();
 
 	upperLeft = Vector2((float)m_winSize.right * m_size,0.0f);
@@ -128,7 +140,10 @@ void TW_CALL UserInterface::FindTest(void* _clientData)
 		Vector3 _pos = _shape->GetPos();
 		TestManager::Singleton()->GenerateFindTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
 	}
-	//Otherwise do all points or pop up error message
+	else
+	{
+		ScreenMessage::Singleton()->DisplayMessage(L"A query rect needs to be drawn to perform this test");
+	}
 }
 
 void TW_CALL UserInterface::CheckTest(void* _clientData)
@@ -142,7 +157,10 @@ void TW_CALL UserInterface::CheckTest(void* _clientData)
 		Vector3 _pos = _shape->GetPos();
 		TestManager::Singleton()->GenerateCheckTest(Vector2(_pos.x - _hori, _pos.y + _vert), Vector2(_pos.x + _hori, _pos.y - _vert));
 	}
-	//Otherwise do all points or pop up error message
+	else
+	{
+		ScreenMessage::Singleton()->DisplayMessage(L"A query rect needs to be drawn to perform this test");
+	}
 }
 
 void TW_CALL UserInterface::SetActiveMethod(const void *value, void *clientData)
@@ -209,12 +227,19 @@ void UserInterface::Tick(GameData* _GD)
 	{
 		MouseRelease();
 	}
+
 	if (m_pointsToSpawn > 1)
 	{
 		m_wireRadius->SetPos(Pointer::Singleton()->GetPos());
 		m_wireRadius->SetScale((float)m_pointsRange);
 		m_wireRadius->Tick(_GD);
 	}
+	else
+	{
+		m_wireRadius->SetScale(0);
+		m_wireRadius->Tick(_GD);
+	}
+
 	if (queryShape)
 	{
 		queryShape->Tick(_GD);
@@ -236,21 +261,22 @@ void UserInterface::MouseClick()
 			PartitionManager::Singleton()->UnHighlightPartition();
 			if (m_pointsToSpawn == 1)
 			{
-				VBShape* p = new VBShape();
-				p->InitialiseShape("WireDiamond2D");
-				p->SetScale(0.75);
-				p->SetPos(Pointer::Singleton()->GetPos());
-				p->NewPartitionObject();
-				p->InsertToList();
+				if (PointWithinBounds(Vector2(-200,200), Vector2(200, -200), Pointer::Singleton()->GetPos()))
+				{
+					VBShape* p = new VBShape();
+					p->InitialiseShape("WireDiamond2D");
+					p->SetScale(0.75);
+					p->SetPos(Pointer::Singleton()->GetPos());
+					p->NewPartitionObject();
+					p->InsertToList();
+				}
 			}
 			else
 			{
 				for (int i = 0; i < m_pointsToSpawn; ++i)
 				{
 					VBShape* p = new VBShape();
-					p->InitialiseShape("WireDiamond2D");
-					p->SetScale(0.75);
-
+					
 					Vector3 pos = Pointer::Singleton()->GetPos();
 					float a, b, c;
 					while (true)
@@ -263,12 +289,22 @@ void UserInterface::MouseClick()
 							break;
 						}
 					}
+
 					pos.x = pos.x + a;
 					pos.y = pos.y + b;
-					p->SetPos(pos);
 
-					p->NewPartitionObject();
-					p->InsertToList();
+					if (PointWithinBounds(Vector2(-200, 200), Vector2(200, -200), pos))
+					{
+						p->InitialiseShape("WireDiamond2D");
+						p->SetScale(0.75);
+						p->SetPos(pos);
+						p->NewPartitionObject();
+						p->InsertToList();
+					}
+					else
+					{
+						delete p;
+					}
 				}
 			}
 			PartitionManager::Singleton()->HighlightPartition();
@@ -284,11 +320,7 @@ void UserInterface::MouseClick()
 					queryShape->InitialiseShape("SolidCube2D");
 					queryShape->SetColour(Color(1.0f, 0.0f, 0.0f, 0.25f));
 				}
-				
-
 			}
-			
-			//BEGIN DRAWING QUERY BOX
 			break;
 		}
 	}
@@ -343,7 +375,6 @@ void UserInterface::MouseRelease()
 void UserInterface::CreateQuery()
 {
 	isDrawingQuery = false;
-	//SAVE DRAWN QUERY BOX INTO WORLD
 }
 
 void UserInterface::PositionQuery()
@@ -355,13 +386,20 @@ void UserInterface::PositionQuery()
 
 void UserInterface::Draw(DrawData* _DD)
 {
+	frameShape->Draw(_DD);
+	backgroundShape->Draw(_DD);
+
+	if (m_method == INTERFACE_POINT)
+	{
+		if (m_pointsToSpawn > 1)
+		{
+			m_wireRadius->Draw(_DD);
+		}
+	}
+
 	if (queryShape)
 	{
 		queryShape->Draw(_DD);
-	}
-	if (m_pointsToSpawn > 1)
-	{
-		m_wireRadius->Draw(_DD);
 	}
 }
 
@@ -388,10 +426,18 @@ void UserInterface::AddVarRW(TwBar* _bar, const char* _name, TwType _type,
 	_list->push_back(_name);
 }
 
+void UserInterface::AddButton(TwBar* _bar, const char* _name, TwButtonCallback _callback, 
+	void* _clientData, const char* _def, list<const char*>* _list)
+{
+	TwAddButton(_bar, _name, _callback, _clientData, _def);
+	_list->push_back(_name);
+}
+
 void UserInterface::InterfacePointMethod()
 {
-	AddVarRW(leftUI, "pointstospawn", TW_TYPE_INT32, &m_pointsToSpawn, " min=1 max=100 label='Points to Place' ", &m_interfaceMethodVariables);
-	AddVarRW(leftUI, "pointsrange", TW_TYPE_INT32, &m_pointsRange, " min=0 max=100 label='Points Range' ", &m_interfaceMethodVariables);
+	AddVarRW(leftUI, "pointstospawn", TW_TYPE_INT32, &m_pointsToSpawn, " group = 'Mode Menu' min=1 max=100 label='Points to Place' ", &m_interfaceMethodVariables);
+	AddVarRW(leftUI, "pointsrange", TW_TYPE_INT32, &m_pointsRange, " group = 'Mode Menu' min=0 max=100 label='Points Range' ", &m_interfaceMethodVariables);
+	AddButton(leftUI, "deletepoints", DeletePoints, nullptr, " group = 'Mode Menu' label='Delete All Points' ", &m_interfaceMethodVariables);
 }
 
 bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point)
@@ -403,6 +449,24 @@ bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Ve
 			if (_point.y >= _topLeft.y)
 			{
 				if (_point.y <= _bottomRight.y)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector3 _point)
+{
+	if (_point.x >= _topLeft.x)
+	{
+		if (_point.x <= _bottomRight.x)
+		{
+			if (_point.y <= _topLeft.y)
+			{
+				if (_point.y >= _bottomRight.y)
 				{
 					return true;
 				}

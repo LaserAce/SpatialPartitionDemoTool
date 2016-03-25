@@ -40,6 +40,7 @@ public:
 
 	void SetColour(Color _c){ m_currentColour = _c; }
 	Color GetColour(){ return m_currentColour; }
+	void SetDefaultColour(Color _c) { m_defaultColour = _c; SetToDefaultColour(); }
 	void SetToDefaultColour(){ m_currentColour = m_defaultColour; }
 
 protected:

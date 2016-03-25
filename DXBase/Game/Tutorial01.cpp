@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------
-// This file is trongly based on that described below, and was amended for the Game Engine Architecture.
-// Most changes labelled SS.
+// This file is Strongly based on that described below, and was used previously in Game Engine Architecture
+// and has now being amended for the Creative Technologies Project
 //--------------------------------------------------------------------------------------
 // File: Tutorial01.cpp
 //
@@ -19,7 +19,7 @@
 #include <d3d11_1.h>
 #include <directxcolors.h>
 #include "resource.h"
-#include "game.h" //SS added to create put game manager
+#include "game.h" 
 #include <AntTweakBar.h>
 
 using namespace DirectX;
@@ -39,8 +39,8 @@ IDXGISwapChain*         g_pSwapChain = nullptr;
 IDXGISwapChain1*        g_pSwapChain1 = nullptr;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 
-ID3D11Texture2D*        g_pDepthStencil = NULL;			//SS adding a depth buffer
-ID3D11DepthStencilView* g_pDepthStencilView = nullptr;	//SS 
+ID3D11Texture2D*        g_pDepthStencil = NULL;			
+ID3D11DepthStencilView* g_pDepthStencilView = nullptr;	
 
 Game*					g_MyGame = nullptr;
 
@@ -94,13 +94,13 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         }
         else
         {
-			if (g_MyGame->update()) //SS update next logical tick of the game
+			if (g_MyGame->update()) 
 			{
 				Render();
 			}
 			else
 			{
-				break; //SS if game sends back an exit single quit program
+				break; 
 			}
         }
     }
@@ -342,7 +342,6 @@ HRESULT InitDevice()
     if( FAILED( hr ) )
         return hr;
 
-	//SS Create depth stencil texture
 	D3D11_TEXTURE2D_DESC descDepth;
 	ZeroMemory(&descDepth, sizeof(descDepth));
 	descDepth.Width = width;
@@ -360,7 +359,6 @@ HRESULT InitDevice()
 	if (FAILED(hr))
 		return hr;
 
-	//SS Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = descDepth.Format;
@@ -372,7 +370,6 @@ HRESULT InitDevice()
 
 	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
-	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -383,7 +380,7 @@ HRESULT InitDevice()
 	g_pImmediateContext->RSSetViewports(1, &vp);
 
 
-	g_MyGame = new Game(g_pd3dDevice, g_hInst); //SS Create the Game instance
+	g_MyGame = new Game(g_pd3dDevice, g_hInst); 
 
     return S_OK;
 }
@@ -399,7 +396,7 @@ void Render()
 	// Clear the depth stencil
 	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
 	
-	if (g_MyGame) g_MyGame->render(g_pImmediateContext); //SS Render the next frame from the game
+	if (g_MyGame) g_MyGame->render(g_pImmediateContext); 
 
     g_pSwapChain->Present( 0, 0 );
 }
@@ -410,12 +407,12 @@ void Render()
 //--------------------------------------------------------------------------------------
 void CleanupDevice()
 {
-	if (g_MyGame) delete g_MyGame; //SS Destroy the Game instance
+	if (g_MyGame) delete g_MyGame; 
 
     if( g_pImmediateContext ) g_pImmediateContext->ClearState();
 
-	if (g_pDepthStencil) g_pDepthStencil->Release();//SS to get rid of depth stuff
-	if (g_pDepthStencilView) g_pDepthStencilView->Release();//SS
+	if (g_pDepthStencil) g_pDepthStencil->Release();
+	if (g_pDepthStencilView) g_pDepthStencilView->Release();
     if( g_pRenderTargetView ) g_pRenderTargetView->Release();
     if( g_pSwapChain1 ) g_pSwapChain1->Release();
     if( g_pSwapChain ) g_pSwapChain->Release();

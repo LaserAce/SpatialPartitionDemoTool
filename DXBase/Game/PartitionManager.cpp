@@ -3,6 +3,7 @@
 #include "KDtree.h"
 #include "Grid.h"
 #include "BruteForce.h"
+#include "Rtree.h"
 #include "PartitionObject.h"
 #include "Pointer.h"
 #include "Test.h"
@@ -26,6 +27,7 @@ PartitionManager::PartitionManager()
 	m_partitionMethods.push_back(new Grid(Vector3(), Vector3(200, 200, 1), 10, 0, 0, 1));
 	m_partitionMethods.push_back(new Quadtree(Vector3(), 200, 0, 10, 5));
 	m_partitionMethods.push_back(new KDtree(Vector3(), Vector3(200,200, 1), true, 0, 1, 100));
+	m_partitionMethods.push_back(new Rtree());
 }
 
 PartitionManager::~PartitionManager()
