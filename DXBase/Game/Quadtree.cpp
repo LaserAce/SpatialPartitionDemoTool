@@ -104,7 +104,7 @@ void Quadtree::Remove(PartitionObject* _object)
 void Quadtree::Update(PartitionObject* _object)
 {
 	Remove(_object);
-	_object->s_partitionManager->GetCurrentRoot()->Insert(_object);
+	PartitionManager::Singleton()->GetCurrentRoot()->Insert(_object);
 }
 
 void Quadtree::Split()

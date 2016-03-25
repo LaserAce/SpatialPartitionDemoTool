@@ -1,7 +1,7 @@
-//base camera class
+//Base camera class
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
-#include "gameobject.h"
+#include "GameObject.h"
 
 struct DrawData;
 
@@ -12,7 +12,6 @@ public:
 	~Camera();
 
 	virtual void Tick(GameData* _GD);
-
 	virtual void Draw(DrawData* _DS);
 
 	Matrix GetProj(){ return m_projMat; }
@@ -40,7 +39,6 @@ protected:
 	float m_aspectRatio;
 	float m_nearPlaneDistance;
 	float m_farPlaneDistance;
-
 };
 
 

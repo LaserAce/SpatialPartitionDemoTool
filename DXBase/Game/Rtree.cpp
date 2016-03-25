@@ -36,7 +36,7 @@ void Rtree::Remove(PartitionObject* _object)
 void Rtree::Update(PartitionObject* _object)
 {
 	Remove(_object);
-	_object->s_partitionManager->GetCurrentRoot()->Insert(_object);
+	PartitionManager::Singleton()->GetCurrentRoot()->Insert(_object);
 }
 
 //Clears away all objects and delete all children nodes

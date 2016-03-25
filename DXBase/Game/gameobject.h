@@ -1,14 +1,14 @@
+//Base Game Object Class
 #ifndef _GAME_OBJECT_H
 #define _GAME_OBJECT_H
-//Base Game Object Class
+
 #include "SimpleMath.h"
 #include "CommonStates.h"
 #include <list>
 
-using std::list;
-
 using namespace DirectX;
 using namespace SimpleMath;
+using std::list;
 
 struct GameData;
 struct DrawData;
@@ -55,8 +55,8 @@ public:
 	void NewPartitionObject();
 
 	static list<GameObject*>* p_gameObjects;
-	void RemoveFromList();
 	void InsertToList();
+	void RemoveFromList();
 
 protected:
 	Vector3 m_pos;
@@ -71,7 +71,6 @@ protected:
 	Matrix m_fudge;
 
 	list<GameObject*>::iterator it_gameObjects;
-
 };
 
 #endif

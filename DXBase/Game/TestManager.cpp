@@ -21,8 +21,19 @@ TestManager::~TestManager()
 	m_tests.clear();
 }
 
+void TestManager::Tick(GameData* _GD)
+{
+	GameObject::Tick(_GD);
+}
+
+void TestManager::Draw(DrawData* _DD)
+{
+	_DD;
+}
+
 void TestManager::SetupTwBar()
 {
+	//Setup the right bar
 	rightUI = TwNewBar("rightUI");
 	TwDefine(" rightUI label='Test Tracker' ");
 	TwDefine(" rightUI movable=false ");
@@ -37,6 +48,7 @@ void TestManager::SetupTwBar()
 
 void TestManager::AdjustSize()
 {
+	//Adjusts the size based on screen dimensions
 	const HWND hDesktop = GetDesktopWindow();
 	GetWindowRect(hDesktop, &m_winSize);
 
@@ -47,32 +59,23 @@ void TestManager::AdjustSize()
 	TwSetParam(rightUI, NULL, "position", TW_PARAM_INT32, 3, barPosition);
 }
 
-void TestManager::Tick(GameData* _GD)
-{
-	GameObject::Tick(_GD);
-}
-
-void TestManager::Draw(DrawData* _DD)
-{
-	_DD;
-}
-
 void TestManager::GenerateFindTest(Vector2 _upperLeft, Vector2 _lowerRight)
 {
+	//Initilise test values
 	FindPointTest* newTest = new FindPointTest();
 	newTest->internalID = numTests;
 	newTest->testType = "Find Point Test";
 	newTest->upperLeft = _upperLeft;
 	newTest->lowerRight = _lowerRight;
-	ULONGLONG timeAtBegin = GetTickCount64();
-	
-	PartitionManager::Singleton()->FindTest(newTest);
 
+	//Time and perform the find all points within zone test
+	ULONGLONG timeAtBegin = GetTickCount64();
+	PartitionManager::Singleton()->FindTest(newTest);
 	newTest->timeTaken = (int)(GetTickCount64() - timeAtBegin);
 
+	//Generate an antweakbar display using test
 	string name = "Test" + to_string(numTests);
 	string group = " group='Test " + to_string(numTests) + "' label='";
-
 	TwAddButton(rightUI, (name + "type").c_str(), NULL, NULL, (group + "Test Type: " + newTest->testType + " '").c_str());
 	TwAddButton(rightUI, (name + "method").c_str(), NULL, NULL, (group + "Method: " + PartitionManager::Singleton()->GetCurrentPartitionName() + " '").c_str());
 	TwAddButton(rightUI, (name + "time").c_str(), NULL, NULL, (group + ("Time Taken: " + to_string(newTest->timeTaken)) + " '").c_str());
@@ -82,6 +85,7 @@ void TestManager::GenerateFindTest(Vector2 _upperLeft, Vector2 _lowerRight)
 	TwAddButton(rightUI, (name + "nodes").c_str(), NULL, NULL, (group + ("Nodes Traversed: " + to_string(newTest->nodesTravelled)) + " '").c_str());
 	TwAddButton(rightUI, (name + "removetest").c_str(), RemoveTest, newTest, (group + "Remove Test '").c_str());
 
+	//Increment test and add to list for further potential use
 	++numTests;
 	m_tests.push_back(newTest);
 	newTest->it_tests = prev(m_tests.end());
@@ -89,23 +93,26 @@ void TestManager::GenerateFindTest(Vector2 _upperLeft, Vector2 _lowerRight)
 
 void TestManager::GenerateCheckTest(Vector2 _upperLeft, Vector2 _lowerRight)
 {
+	//Initilise test values
 	CheckPointTest* newTest = new CheckPointTest();
 	newTest->internalID = numTests;
 	newTest->testType = "Check Point Test";
 	newTest->upperLeft = _upperLeft;
 	newTest->lowerRight = _lowerRight;
 
+	//Perform check test by testing each found object with each other
 	PartitionManager::Singleton()->CheckTest(newTest);
 
+	//Generate an antweakbar display using test
 	string name = "Test" + to_string(numTests);
 	string group = " group='Test " + to_string(numTests) + "' label='";
-
 	TwAddButton(rightUI, (name + "type").c_str(), NULL, NULL, (group + "Test Type: " + newTest->testType + " '").c_str());
 	TwAddButton(rightUI, (name + "method").c_str(), NULL, NULL, (group + "Method: " + PartitionManager::Singleton()->GetCurrentPartitionName() + " '").c_str());
 	TwAddButton(rightUI, (name + "time").c_str(), NULL, NULL, (group + ("Time Taken: " + to_string(newTest->timeTaken)) + " '").c_str());
 	TwAddButton(rightUI, (name + "checkchecks").c_str(), NULL, NULL, (group + ("Point to Point Checks: " + to_string(newTest->numberPointToPointTests)) + " '").c_str());
 	TwAddButton(rightUI, (name + "removetest").c_str(), RemoveTest, newTest, (group + "Remove Test '").c_str());
 
+	//Increment test and add to list for further potential use
 	++numTests;
 	m_tests.push_back(newTest);
 	newTest->it_tests = prev(m_tests.end());
@@ -113,25 +120,29 @@ void TestManager::GenerateCheckTest(Vector2 _upperLeft, Vector2 _lowerRight)
 
 Test* TestManager::BeginBuildTest()
 {
+	//Initilise test values
 	Test* newTest = new Test();
 	newTest->internalID = numTests;
 	newTest->testType = "Build Test";
 	newTest->timeTaken = (int)GetTickCount64();
 	
+	//Increment test and add to list for further potential use
 	++numTests;
 	m_tests.push_back(newTest);
 	newTest->it_tests = prev(m_tests.end());
 
+	//Return to partition manager so it can pass back to end test
 	return newTest;
 }
 
 void TestManager::EndBuildTest(Test* _test)
 {
+	//Update the time taken
 	_test->timeTaken = (int)(GetTickCount64() - _test->timeTaken);
 
+	//Generate an antweakbar display using test
 	string name = "Test" + to_string(numTests);
 	string group = " group='Test " + to_string(numTests) + "' label='";
-
 	TwAddButton(rightUI, (name + "type").c_str(), NULL, NULL, (group + "Test Type: " + _test->testType + " '").c_str());
 	TwAddButton(rightUI, (name + "method").c_str(), NULL, NULL, (group + "Method: " + PartitionManager::Singleton()->GetCurrentPartitionName() + " '").c_str());
 	TwAddButton(rightUI, (name + "time").c_str(), NULL, NULL, (group + ("Time Taken: " + to_string(_test->timeTaken)) + " '").c_str());
@@ -140,6 +151,7 @@ void TestManager::EndBuildTest(Test* _test)
 
 void TW_CALL TestManager::RemoveTest(void* _clientData)
 {
+	//Removes a single anttweakbar test display
 	Test* _test = (Test*)_clientData;
 	TwBar* _bar = TwGetBarByName("rightUI");
 	string name = "Test" + to_string(_test->internalID);
@@ -166,6 +178,7 @@ void TW_CALL TestManager::RemoveTest(void* _clientData)
 
 void TW_CALL TestManager::RemoveAllTests(void* _clientData)
 {
+	//Removes all anttweakbar tests so far
 	TwBar* _bar = TwGetBarByName("rightUI");
 	TwRemoveAllVars(_bar);
 	TwAddButton(_bar, "removeall", RemoveAllTests, nullptr, " Label='Remove All Tests' ");

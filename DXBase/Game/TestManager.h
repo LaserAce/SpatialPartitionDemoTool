@@ -18,19 +18,19 @@ public:
 
 	static TestManager* Singleton() { return singleton; }
 
-	void SetupTwBar();
-	void AdjustSize();
-
 	virtual void Tick(GameData* _GD);
 	virtual void Draw(DrawData* _DD);
 
-	static void TW_CALL RemoveTest(void* _clientData);
-	static void TW_CALL RemoveAllTests(void* _clientData);
+	void SetupTwBar();
+	void AdjustSize();
 
 	void GenerateFindTest(Vector2 _upperLeft, Vector2 _lowerRight);
 	void GenerateCheckTest(Vector2 _upperLeft, Vector2 _lowerRight);
 	Test* BeginBuildTest();
 	void EndBuildTest(Test* _test);
+
+	static void TW_CALL RemoveTest(void* _clientData);
+	static void TW_CALL RemoveAllTests(void* _clientData);
 
 	bool* GetBuildTest() { return &generateBuildTests; }
 protected:
@@ -44,7 +44,7 @@ protected:
 
 	RECT m_winSize;
 	TwBar* rightUI;
-	//lower number takes up more space on screen
+
 	float m_size;
 
 };

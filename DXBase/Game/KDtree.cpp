@@ -103,7 +103,7 @@ void KDtree::Remove(PartitionObject* _object)
 void KDtree::Update(PartitionObject* _object)
 {
 	Remove(_object);
-	_object->s_partitionManager->GetCurrentRoot()->Insert(_object);
+	PartitionManager::Singleton()->GetCurrentRoot()->Insert(_object);
 }
 
 void KDtree::Split()

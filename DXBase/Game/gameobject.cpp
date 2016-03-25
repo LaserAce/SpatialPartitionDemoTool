@@ -1,4 +1,5 @@
-#include "gameobject.h"
+//Base Game Object Class
+#include "GameObject.h"
 #include "PartitionObject.h"
 
 using namespace std;
@@ -32,29 +33,33 @@ void GameObject::Tick(GameData* _GD)
 {
 	_GD;
 	//build up the world matrix depending on the new position of the GameObject
-	//the assumption is that this class will be inherited by the class that ACTUALLY changes this
-	Matrix  scaleMat	= Matrix::CreateScale( m_scale);
-	m_rotMat = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, m_roll);//possible not the best way of doing this!
-	Matrix  transMat = Matrix::CreateTranslation(m_pos);
+	Matrix  _scaleMat	= Matrix::CreateScale( m_scale);
+	m_rotMat = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, m_roll);
+	Matrix  _transMat = Matrix::CreateTranslation(m_pos);
 
-	m_worldMat = scaleMat *m_rotMat * transMat;
+	m_worldMat = _scaleMat *m_rotMat * _transMat;
 
+}
+
+void GameObject::NewPartitionObject()
+{
+	//Creates a new partition object and inserts into currently selected partition
+	p_partitionObject = new PartitionObject(this);
+	p_partitionObject->Insert();
 }
 
 void GameObject::InsertToList()
 {
+	//Allows the GameObject to be added to the main game list
 	p_gameObjects->push_back(this);
 	it_gameObjects = prev(p_gameObjects->end());
 }
 
 void GameObject::RemoveFromList()
 {
+	//Removes the GameObject directly from the main game list
 	p_gameObjects->erase(it_gameObjects);
 }
 
-void GameObject::NewPartitionObject()
-{
-	p_partitionObject = new PartitionObject(this);
-	p_partitionObject->Insert();
-}
+
 

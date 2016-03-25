@@ -356,13 +356,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BruteForce.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="game.cpp" />
-    <ClCompile Include="gameobject.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="KDtree.cpp" />
-    <ClCompile Include="light.cpp" />
     <ClCompile Include="Partition.cpp" />
     <ClCompile Include="PartitionManager.cpp" />
     <ClCompile Include="PartitionObject.cpp" />
@@ -382,19 +381,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BruteForce.h" />
-    <ClInclude Include="camera.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="dinput0x0800.h" />
-    <ClInclude Include="drawdata.h" />
+    <ClInclude Include="Dinput0x0800.h" />
+    <ClInclude Include="DrawData.h" />
     <ClInclude Include="DrawData2D.h" />
-    <ClInclude Include="game.h" />
-    <ClInclude Include="gamedata.h" />
-    <ClInclude Include="gameobject.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="helper.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="KDtree.h" />
-    <ClInclude Include="light.h" />
     <ClInclude Include="MyEffectsFactory.h" />
     <ClInclude Include="Partition.h" />
     <ClInclude Include="PartitionManager.h" />

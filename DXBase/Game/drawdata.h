@@ -11,8 +11,6 @@ struct DrawData
 	ID3D11DeviceContext* pd3dImmediateContext;
 	CommonStates* states; 
 	Camera* cam;
-	Light* light;
-
 };
 
 #endif

@@ -27,9 +27,6 @@ struct ConstantBuffer
 	Matrix	view;
 	Matrix	projection;
 	Matrix	rot;
-	Color	lightCol;
 	Color	ambientCol;
-	Vector3 lightPos;
-	float padding;
 };
 #endif

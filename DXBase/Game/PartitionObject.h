@@ -14,8 +14,6 @@ public:
 	PartitionObject(GameObject* _gameObject);
 	~PartitionObject();
 
-	static PartitionManager* s_partitionManager;
-
 	void Insert();
 	void Update();
 	void Remove();

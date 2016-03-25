@@ -1,3 +1,4 @@
+//Class that holds the data of the current vertex object and colour
 #include "VBShape.h"
 #include "VBData.h"
 #include "WireCube.h"
@@ -7,7 +8,7 @@
 #include "drawdata.h"
 #include "gamedata.h"
 #include "camera.h"
-#include "light.h"
+
 
 VBMap VBShape::s_VBHolder;
 
@@ -23,6 +24,7 @@ VBShape::~VBShape()
 
 void VBShape::AddShapes(ID3D11Device* _GD)
 {
+	//Create series of vertex objects and store in memory for quick loading
 	VBData* data;
 
 	data = WireCube::InitialiseBuffer(_GD, true);
@@ -46,6 +48,7 @@ void VBShape::AddShapes(ID3D11Device* _GD)
 
 void VBShape::InitialiseShape(string _shapeName)
 {
+	//Creates new vertex object using stored data in memory
 	m_pCB = new ConstantBuffer();
 	ZeroMemory(m_pCB, sizeof(ConstantBuffer));
 	VBMap::iterator it = s_VBHolder.find(_shapeName);
@@ -58,7 +61,7 @@ void VBShape::InitialiseShape(string _shapeName)
 	}
 	else
 	{
-		//Create new shape or break horribly or something
+		//Create new shape or break
 	}
 }
 
@@ -68,11 +71,9 @@ void VBShape::Tick(GameData* _GD)
 }
 void VBShape::Draw(DrawData* _DD)
 {
-	//Here we update the constant buffer and feed in the color of our object "currColor"
+	//Update constant buffer data so colour and position can be changed dynamicly
 	((ConstantBuffer*)m_pCB)->view = _DD->cam->GetView().Transpose();
 	((ConstantBuffer*)m_pCB)->projection = _DD->cam->GetProj().Transpose();
-	((ConstantBuffer*)m_pCB)->lightCol =_DD->light->GetColour();
-	((ConstantBuffer*)m_pCB)->lightPos = _DD->light->GetPos();
 	((ConstantBuffer*)m_pCB)->ambientCol = m_currentColour;
 	((ConstantBuffer*)m_pCB)->world = m_worldMat.Transpose();
 	((ConstantBuffer*)m_pCB)->rot = m_rotMat.Transpose();

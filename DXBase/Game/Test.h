@@ -1,3 +1,4 @@
+//Contains the types of tests as structs
 #ifndef _TEST_H_
 #define _TEST_H_
 

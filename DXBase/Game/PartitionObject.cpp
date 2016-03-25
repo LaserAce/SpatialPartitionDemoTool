@@ -2,18 +2,16 @@
 #include "Partition.h"
 #include "PartitionManager.h"
 
-PartitionManager* PartitionObject::s_partitionManager = nullptr;
-
 PartitionObject::PartitionObject(GameObject* _gameObject)
 {
 	p_gameObject = _gameObject;
-	it_managerLocation = s_partitionManager->AddToManagerList(this);
+	it_managerLocation = PartitionManager::Singleton()->AddToManagerList(this);
 }
 
 PartitionObject::~PartitionObject()
 {
 	p_gameObject->SetPartitionObject(nullptr);
-	s_partitionManager->RemoveFromManagerList(it_managerLocation);
+	PartitionManager::Singleton()->RemoveFromManagerList(it_managerLocation);
 	if (p_partition)
 	{
 		Remove();
@@ -22,7 +20,7 @@ PartitionObject::~PartitionObject()
 
 void PartitionObject::Insert()
 {
-	s_partitionManager->GetCurrentRoot()->Insert(this);
+	PartitionManager::Singleton()->GetCurrentRoot()->Insert(this);
 }
 
 void PartitionObject::Update()

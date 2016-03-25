@@ -1,3 +1,4 @@
+//Base 2D gameobject class
 #include "GameObject2D.h"
 #include "gamedata.h"
 #include "DrawData2D.h"
@@ -6,29 +7,30 @@
 
 using namespace DirectX;
 
-GameObject2D::GameObject2D(string _fileName, ID3D11Device* _GD) :m_pTextureRV(nullptr)
+GameObject2D::GameObject2D(string _fileName, ID3D11Device* _device) :m_pTextureRV(nullptr)
 {
 	m_colour = Color(1.0f, 1.0f,1.0f, 1.0f);
 	m_pos = Vector2::Zero;
 	m_rotation = 0.0f;
 	m_scale = Vector2::One;
 
-	string fullfilename =
+	//Create a 2D texture object
+	string _fullfilename =
 #if DEBUG
 		"../Debug/"
 #else
 		"../Release/"
 #endif
 		+ _fileName + ".dds";
-	CreateDDSTextureFromFile(_GD, Helper::charToWChar(fullfilename.c_str()), nullptr, &m_pTextureRV);
+	CreateDDSTextureFromFile(_device, Helper::charToWChar(_fullfilename.c_str()), nullptr, &m_pTextureRV);
 
 	//this nasty thing is required to find out the size of this image!
-	ID3D11Resource *pResource;
-	D3D11_TEXTURE2D_DESC Desc;
-	m_pTextureRV->GetResource(&pResource);
-	((ID3D11Texture2D *)pResource)->GetDesc(&Desc);
+	ID3D11Resource *_pResource;
+	D3D11_TEXTURE2D_DESC _Desc;
+	m_pTextureRV->GetResource(&_pResource);
+	((ID3D11Texture2D *)_pResource)->GetDesc(&_Desc);
 	
-	m_origin = 0.5f*Vector2((float)Desc.Width, (float)Desc.Height);//around which rotation and scaing is done
+	m_origin = 0.5f*Vector2((float)_Desc.Width, (float)_Desc.Height);//around which rotation and scaing is done
  
 }
 

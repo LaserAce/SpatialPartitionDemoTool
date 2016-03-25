@@ -29,27 +29,18 @@
     <Filter Include="Engine\VBGO Source">
       <UniqueIdentifier>{a1a69eec-8b55-4905-8432-1aa3dd65fe41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Interface Headers">
+      <UniqueIdentifier>{c38bd523-fda8-4d5b-935e-c589581ddb52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Interface Source">
+      <UniqueIdentifier>{34fdb61b-435e-490b-a0d7-d5363e2d003d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">
       <Filter>Base\Resource Files</Filter>
     </CLInclude>
-    <ClInclude Include="drawdata.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gamedata.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobject.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="helper.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MyEffectsFactory.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject2D.h">
@@ -58,14 +49,8 @@
     <ClInclude Include="DrawData2D.h">
       <Filter>Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Partition.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="dinput0x0800.h">
-      <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PartitionObject.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
@@ -73,20 +58,11 @@
     <ClInclude Include="Quadtree.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="Pointer.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PartitionManager.h">
-      <Filter>Engine\SpatialPartitionHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="KDtree.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
     </ClInclude>
     <ClInclude Include="Grid.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="UserInterface.h">
-      <Filter>Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BruteForce.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
@@ -109,9 +85,6 @@
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WireDiamond.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
@@ -124,17 +97,47 @@
     <ClInclude Include="SolidCube.h">
       <Filter>Engine\VBGO Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Test.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestManager.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenMessage.h">
-      <Filter>Engine\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Rtree.h">
       <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dinput0x0800.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawData.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KDtree.h">
+      <Filter>Engine\SpatialPartitionHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Pointer.h">
+      <Filter>Engine\Interface Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenMessage.h">
+      <Filter>Engine\Interface Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>Engine\Interface Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="TestManager.h">
+      <Filter>Engine\Interface Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>Engine\Interface Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,16 +149,7 @@
     <ClCompile Include="Tutorial01.cpp">
       <Filter>Base</Filter>
     </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobject.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject2D.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
       <Filter>Engine\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PartitionObject.cpp">
@@ -163,9 +157,6 @@
     </ClCompile>
     <ClCompile Include="Quadtree.cpp">
       <Filter>Engine\SpatialPartitionSource</Filter>
-    </ClCompile>
-    <ClCompile Include="Pointer.cpp">
-      <Filter>Engine\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PartitionManager.cpp">
       <Filter>Engine\SpatialPartitionSource</Filter>
@@ -179,14 +170,8 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Engine\SpatialPartitionSource</Filter>
     </ClCompile>
-    <ClCompile Include="UserInterface.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BruteForce.cpp">
       <Filter>Engine\SpatialPartitionSource</Filter>
-    </ClCompile>
-    <ClCompile Include="light.cpp">
-      <Filter>Engine\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VBGO.cpp">
       <Filter>Engine\VBGO Source</Filter>
@@ -206,14 +191,29 @@
     <ClCompile Include="SolidCube.cpp">
       <Filter>Engine\VBGO Source</Filter>
     </ClCompile>
-    <ClCompile Include="TestManager.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreenMessage.cpp">
-      <Filter>Engine\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Rtree.cpp">
       <Filter>Engine\SpatialPartitionSource</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface.cpp">
+      <Filter>Engine\Interface Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Pointer.cpp">
+      <Filter>Engine\Interface Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenMessage.cpp">
+      <Filter>Engine\Interface Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TestManager.cpp">
+      <Filter>Engine\Interface Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

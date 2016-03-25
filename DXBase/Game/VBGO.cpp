@@ -5,7 +5,6 @@
 #include "drawdata.h"
 #include "vertex.h"
 #include "camera.h"
-#include "light.h"
 
 ID3D11Device* VBGO::s_pd3dDevice = nullptr;
 
@@ -270,9 +269,7 @@ void VBGO::UpdateConstantBuffer(DrawData* _DD)
 	//you'll need your own version of this if you use a different Constant Buffer
 	s_pCB->view = _DD->cam->GetView().Transpose();
 	s_pCB->projection = _DD->cam->GetProj().Transpose();
-	s_pCB->lightCol = _DD->light->GetColour();
-	s_pCB->lightPos = _DD->light->GetPos();
-	s_pCB->ambientCol = _DD->light->GetAmbCol();
+	s_pCB->ambientCol = Color();
 }
 
 void VBGO::CleanUp()

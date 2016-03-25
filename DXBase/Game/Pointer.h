@@ -1,3 +1,4 @@
+//The visual pointer that follows the cursor
 #ifndef _POINTER_H_
 #define _POINTER_H_
 

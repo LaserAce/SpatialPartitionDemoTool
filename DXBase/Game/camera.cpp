@@ -1,6 +1,6 @@
-//base camera class
-#include "camera.h"
-#include "gamedata.h"
+//Base camera class
+#include "Camera.h"
+#include "GameData.h"
 
 Camera::Camera(float _fieldOfView, float _width, float _height, float _nearPlaneDistance, float _farPlaneDistance, Vector3 _target, Vector3 _up)
 {
@@ -21,42 +21,39 @@ Camera::~Camera()
 
 void Camera::Tick(GameData* _GD)
 {
-	RECT rc;
-	const HWND hDesktop = GetDesktopWindow();
-	GetWindowRect(hDesktop, &rc);
-
-	float camSpeed = 10.0f;
+	//Input for basic camera movement
+	float _camSpeed = 10.0f;
 	if (_GD->keyboard[DIK_W] & 0x80)
 	{
-		m_pos.y += _GD->dt * camSpeed;
-		m_target.y += _GD->dt * camSpeed;
+		m_pos.y += _GD->dt * _camSpeed;
+		m_target.y += _GD->dt * _camSpeed;
 	}
 	if (_GD->keyboard[DIK_S] & 0x80)
 	{
-		m_pos.y -= _GD->dt * camSpeed;
-		m_target.y -= _GD->dt * camSpeed;
+		m_pos.y -= _GD->dt * _camSpeed;
+		m_target.y -= _GD->dt * _camSpeed;
 	}
 	if (_GD->keyboard[DIK_A] & 0x80)
 	{
-		m_pos.x -= _GD->dt * camSpeed;
-		m_target.x -= _GD->dt * camSpeed;
+		m_pos.x -= _GD->dt * _camSpeed;
+		m_target.x -= _GD->dt * _camSpeed;
 	}
 	if (_GD->keyboard[DIK_D] & 0x80)
 	{
-		m_pos.x += _GD->dt * camSpeed;
-		m_target.x += _GD->dt * camSpeed;
+		m_pos.x += _GD->dt * _camSpeed;
+		m_target.x += _GD->dt * _camSpeed;
 	}
-	float zoomSpeed = 50.0f;
+	float _zoomSpeed = 50.0f;
 	if (_GD->keyboard[DIK_Q] & 0x80)
 	{
-		m_width -= _GD->dt * zoomSpeed;
+		m_width -= _GD->dt * _zoomSpeed;
 	}
 	if (_GD->keyboard[DIK_E] & 0x80)
 	{
-		m_width += _GD->dt * zoomSpeed;
+		m_width += _GD->dt * _zoomSpeed;
 	}
 
-	//m_projMat = Matrix::CreatePerspectiveFieldOfView(m_fieldOfView, m_aspectRatio, m_nearPlaneDistance, m_farPlaneDistance);
+	//Create an orthographic camera view
 	m_projMat = Matrix::CreateOrthographic(m_width, m_width/m_aspectRatio, m_nearPlaneDistance, m_farPlaneDistance);
 	m_viewMat = Matrix::CreateLookAt(m_pos, m_target, m_up);
 

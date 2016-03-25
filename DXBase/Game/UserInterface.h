@@ -1,3 +1,4 @@
+//The left hand interface that manages most of the user input
 #ifndef _USER_INTERFACE_H_
 #define _USER_INTERFACE_H_
 
@@ -28,6 +29,9 @@ public:
 	void SetupTwBar();
 	void AdjustSize();
 
+	virtual void Tick(GameData* _GD);
+	virtual void Draw(DrawData* _DD);
+
 	static void TW_CALL RebuildPartition(void* _clientData);
 	static void TW_CALL ResetPartition(void* _clientData);
 	static void TW_CALL DeletePoints(void* _clientData);
@@ -43,18 +47,17 @@ public:
 	static void TW_CALL SetHighlight(const void *value, void *clientData);
 	static void TW_CALL GetHighlight(void *value, void *clientData);
 
-	virtual void Tick(GameData* _GD);
-	virtual void Draw(DrawData* _DD);
+	
 
 	InterfaceMethod* GetInterfaceMehod(){ return &m_method; }
 	void SetInterfaceMethod(InterfaceMethod _method){ m_method = _method; }
+	
 	VBShape* GetQueryBox() { return queryShape; }
 
 	int* GetMaxObjects() { return &m_maxObjects; }
 	int* GetMaxLevels() { return &m_maxLevels; }
 
 	void RemoveVariables(list<const char*>* _variables);
-
 	//list<const char*>* GetInterfaceMethodVariables(){ return &m_interfaceMethodVariables; }
 	void InterfacePointMethod();
 protected:

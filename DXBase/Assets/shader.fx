@@ -11,10 +11,7 @@ cbuffer ConstantBuffer : register( b0 )
 	matrix View;
 	matrix Projection;
 	matrix rot;
-	float4 lightCol;
 	float4 ambientCol;
-	float3 lightPos;
-	float padding;
 }
 
 //--------------------------------------------------------------------------------------

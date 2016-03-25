@@ -1,5 +1,7 @@
+//Base 2D gameobject class
 #ifndef _GAME_OBJECT_2D_H_
 #define _GAME_OBJECT_2D_H_
+
 #include <d3d11_1.h>
 #include "SimpleMath.h"
 #include <string>
@@ -15,7 +17,7 @@ class GameObject2D
 {
 public:
 	GameObject2D(){};
-	GameObject2D(string _fileName, ID3D11Device* _GD);
+	GameObject2D(string _fileName, ID3D11Device* _device);
 	virtual ~GameObject2D();
 
 	virtual void tick(GameData* _GD);
@@ -36,8 +38,5 @@ protected:
 	Vector2 m_origin;
 
 	ID3D11ShaderResourceView* m_pTextureRV = nullptr;
-
 };
-
-
 #endif

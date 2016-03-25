@@ -156,7 +156,7 @@ void Grid::Remove(PartitionObject* _object)
 void Grid::Update(PartitionObject* _object)
 {
 	Remove(_object);
-	_object->s_partitionManager->GetCurrentRoot()->Insert(_object);
+	PartitionManager::Singleton()->GetCurrentRoot()->Insert(_object);
 }
 
 void Grid::Split()

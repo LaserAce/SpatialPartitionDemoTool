@@ -1,3 +1,4 @@
+//Main game/application class
 #include "game.h"
 #include "gameobject.h"
 #include "GameObject2D.h"
@@ -11,7 +12,6 @@
 #include "DrawData2D.h"
 #include "camera.h"
 #include "VBShape.h"
-#include "light.h"
 #include "Pointer.h"
 #include "PartitionObject.h"
 #include "PartitionManager.h"
@@ -19,12 +19,7 @@
 #include "TestManager.h"
 #include "ScreenMessage.h"
 
-
-
-using namespace DirectX;
-
 extern HWND g_hWnd;
-
 
 Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_myEF(nullptr)
 {
@@ -48,83 +43,77 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_States=new DirectX::CommonStates(_pd3dDevice);
 
 	//Direct Input Stuff
-	HRESULT hr = DirectInput8Create(_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDirectInput, NULL);
-	hr = m_pDirectInput->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, NULL);
-	hr = m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = m_pKeyboard->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	HRESULT _hr = DirectInput8Create(_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDirectInput, NULL);
+	_hr = m_pDirectInput->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, NULL);
+	_hr = m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	_hr = m_pKeyboard->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
 	// initialize the mouse
-	hr = m_pDirectInput->CreateDevice(GUID_SysMouse, &m_pMouse, NULL);
-	hr = m_pMouse->SetCooperativeLevel(g_hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
-	hr = m_pMouse->SetDataFormat(&c_dfDIMouse);
+	_hr = m_pDirectInput->CreateDevice(GUID_SysMouse, &m_pMouse, NULL);
+	_hr = m_pMouse->SetCooperativeLevel(g_hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	_hr = m_pMouse->SetDataFormat(&c_dfDIMouse);
 
-
+	//Setup the gamedata that will passed around in tick
 	m_GD = new GameData();
 	m_GD->keyboard = m_keyboardState;
 	m_GD->prevKeyboard = m_prevKeyboardState;
 	m_GD->mouse = &m_mouse_state;
 	m_GD->prevMouse = &m_prev_mouse_state;
 
-
+	//Setup the starting values for the camera
 	m_Cam = new Camera(0.25f * XM_PI, 640.0f, 480.0f, 1.0f, 10000.0f, Vector3::Zero, Vector3::UnitY);
 	m_Cam->SetPos( Vector3(0.0f, 0.0f, 100.0f));
-	
 	m_GameObjects.push_back(m_Cam);
 	
+	
 
+
+	ID3D11DeviceContext* _pd3dImmediateContext;
+	_pd3dDevice->GetImmediateContext(&_pd3dImmediateContext);
+	
+	//Setup the drawdata that will passed around in gameobject tick
 	m_DD = new DrawData();
-	m_DD->light = new Light(Vector3(0,100,0),Color(0,0,0), Color(0,0,0));
+	m_DD->pd3dImmediateContext = _pd3dImmediateContext;
+	m_DD->states = m_States;
 
-
-	
-	ID3D11DeviceContext* pd3dImmediateContext;
-	_pd3dDevice->GetImmediateContext(&pd3dImmediateContext);
-	
-	// Create DirectXTK spritebatch stuff
+	//Setup the drawdata2d that will be passed around in the gameobject2d tick
 	m_DD2D = new DrawData2D();
-	m_DD2D->m_Sprites.reset(new SpriteBatch(pd3dImmediateContext));
+	m_DD2D->m_Sprites.reset(new SpriteBatch(_pd3dImmediateContext));
 	m_DD2D->m_Font.reset(new SpriteFont(_pd3dDevice, L"italic.spritefont"));
 	
-	//create Draw Data
-	m_DD->pd3dImmediateContext = pd3dImmediateContext;
-	m_DD->states = m_States;
-	
-	//initilise the defaults for the VBGOs
+	//initilise the defaults for the VBGOs and VBShapes
 	VBGO::Init(_pd3dDevice);
-
 	VBShape::AddShapes(_pd3dDevice);
 
-	m_UI = new UserInterface();
-	m_GameObjects.push_back(m_UI);
+	//Create the interfaces above everything else
+	m_GameObjects.push_back(new UserInterface());
+	m_GameObjects.push_back(new TestManager());
 
-	PartitionManager* partitionManager = new PartitionManager();
-	m_GameObjects.push_back(partitionManager);
-	PartitionObject::s_partitionManager = partitionManager;
+	//Create the partitions next
+	m_GameObjects.push_back(new PartitionManager());
+	
+	//Create the pointer that will follow the mouse cursor
+	Pointer* _p = new Pointer();
+	_p->SetCamera(m_Cam);
+	_p->InitialiseShape("WireDiamond3D");
+	_p->SetScale(5);
+	m_GameObjects.push_back(_p);
 
-	Pointer* p = new Pointer();
-	p->SetCamera(m_Cam);
-	p->InitialiseShape("WireDiamond3D");
-	p->SetScale(5);
-	m_GameObjects.push_back(p);
-
-	m_TM = new TestManager();
-	m_GameObjects.push_back(m_TM);
-
+	//Create a display message that can show text to the screen
 	m_GameObject2Ds.push_back(new ScreenMessage());
 
+	//Randomly generate some starting points
 	for (int i = 0; i < 500; ++i)
 	{
-		VBShape* s = new VBShape();
-		s->InitialiseShape("WireDiamond2D");
-		s->SetScale(0.75);
-		int randx = (rand() % 401) - 200;
-		int randy = (rand() % 401) - 200;
-		s->SetPos(Vector3((float)randx, (float)randy, 0.0f));
-		s->NewPartitionObject();
-		s->InsertToList();
+		VBShape* _s = new VBShape();
+		_s->InitialiseShape("WireDiamond2D");
+		_s->SetScale(0.75);
+		int _randx = (rand() % 401) - 200;
+		int _randy = (rand() % 401) - 200;
+		_s->SetPos(Vector3((float)_randx, (float)_randy, 0.0f));
+		_s->NewPartitionObject();
+		_s->InsertToList();
 	}
-
-	
 }
 
 Game::~Game()
@@ -163,12 +152,7 @@ Game::~Game()
 	delete m_myEF;
 	delete m_GD;
 	delete m_DD;
-}
-
-void Game::InitAntTweak()
-{
-	m_UI->SetupTwBar();
-	m_TM->SetupTwBar();
+	delete m_DD2D;
 }
 
 bool Game::update()
@@ -182,11 +166,11 @@ bool Game::update()
 	}
 	
 	//calculate frame time-step dt for passing down to game objects
-	DWORD currentTime = GetTickCount();
-	m_GD->dt = min((float)(currentTime - m_playTime) / 1000.0f, 0.1f);
-	m_playTime = currentTime;
+	DWORD _currentTime = GetTickCount();
+	m_GD->dt = min((float)(_currentTime - m_playTime) / 1000.0f, 0.1f);
+	m_playTime = _currentTime;
 
-
+	//Tick/update all objects
 	for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 	{
 		(*it)->Tick(m_GD);
@@ -228,6 +212,13 @@ void Game::render(ID3D11DeviceContext* _pd3dImmediateContext)
 	TwDraw();
 
 	_pd3dImmediateContext->OMSetDepthStencilState(m_States->DepthDefault(), 0);
+}
+
+void Game::InitAntTweak()
+{
+	//Initilise anttweakbars
+	UserInterface::Singleton()->SetupTwBar();
+	TestManager::Singleton()->SetupTwBar();
 }
 
 bool Game::ReadKeyboard()

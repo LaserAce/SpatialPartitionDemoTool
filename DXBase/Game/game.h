@@ -1,6 +1,7 @@
+//Main game/application class
 #ifndef _GAME_H_
 #define _GAME_H_
-//Basic Game Manager Class
+
 #include <windows.h>
 #include "Effects.h"
 //#include "DXUT.h"
@@ -12,32 +13,28 @@
 #include "dinput0x0800.h"
 
 using namespace std;
-
 using namespace DirectX;
 
 class GameObject;
 class GameObject2D;
-class Light;
 class Camera;
+class VBShape;
+class UserInterface;
+class TestManager;
 struct GameData;
 struct DrawData;
 struct DrawData2D;
-class UserInterface;
-class TestManager;
-
-class VBShape;
 
 class Game
 {
 public:
-	VBShape* vb;
-	Game(ID3D11Device* pd3dDevice, HINSTANCE hInstance);
+	Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance);
 	~Game();
 	
 	bool update(); //tick the game state
-	void InitAntTweak();
+	void render(ID3D11DeviceContext* _pd3dImmediateContext); //render the current game state
 
-	void render(ID3D11DeviceContext* pd3dImmediateContext); //render the current game state
+	void InitAntTweak();
 
 protected:
 	bool ReadKeyboard();
@@ -63,16 +60,8 @@ protected:
 	DIMOUSESTATE			m_mouse_state;
 	DIMOUSESTATE            m_prev_mouse_state;
 
-	//my GameData
 	GameData* m_GD;
 	DrawData* m_DD;
 	DrawData2D* m_DD2D;
-
-	UserInterface* m_UI;
-	TestManager* m_TM;
-
-
 };
-
-
 #endif

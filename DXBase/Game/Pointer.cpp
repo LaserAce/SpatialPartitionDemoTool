@@ -1,3 +1,4 @@
+//The visual pointer that follows the cursor
 #include "Pointer.h"
 #include "camera.h"
 
@@ -28,6 +29,7 @@ void Pointer::Draw(DrawData* _DD)
 
 void Pointer::Trace()
 {
+	//Determine the world space position of the cursor
 	RECT rc;
 	const HWND hDesktop = GetDesktopWindow();
 	GetWindowRect(hDesktop, &rc);

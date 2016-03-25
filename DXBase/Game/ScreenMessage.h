@@ -1,3 +1,4 @@
+//This class manages showing text to the screen
 #ifndef _SCREEN_MESSAGE_H_
 #define _SCREEN_MESSAGE_H_
 

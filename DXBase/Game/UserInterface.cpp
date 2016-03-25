@@ -1,3 +1,4 @@
+//The left hand interface that manages most of the user input
 #include "UserInterface.h"
 #include "PartitionManager.h"
 #include "gamedata.h"
@@ -15,16 +16,19 @@ UserInterface::UserInterface()
 {
 	singleton = this;
 	m_method = INTERFACE_POINT;
+	//Initilise the radius that shows the area in which points can be placed around cursor
 	m_wireRadius = new VBShape();
 	m_wireRadius->InitialiseShape("WireCircle2D");
 	m_wireRadius->SetScale(0);
 
+	//Initilise the bold frame that shows where points can be placed
 	frameShape = new VBShape();
 	frameShape->InitialiseShape("SolidCube2D");
 	frameShape->SetScale(202.5f);
 	frameShape->SetDefaultColour(Color(0.2, 1, 0));
 	frameShape->Tick(nullptr);
 
+	//Initilise a solid fill background for the partitions
 	backgroundShape = new VBShape();
 	backgroundShape->InitialiseShape("SolidCube2D");
 	backgroundShape->SetScale(200);
@@ -44,6 +48,7 @@ UserInterface::~UserInterface()
 
 void UserInterface::SetupTwBar()
 {
+	//Initilise the left bar
 	leftUI = TwNewBar("leftUI");
 	TwDefine(" leftUI label='Parameter Interface' ");
 	TwDefine(" leftUI movable=false ");
@@ -54,7 +59,7 @@ void UserInterface::SetupTwBar()
 
 	AdjustSize();
 
-	//Define a tweak bar enumerator based on an actual enumerator
+	//Create all the buttons and sliders for the left bar
 	TwEnumVal methods[MAX_METHODS] =
 	{
 		{ NONE, "Not Active" },
@@ -87,15 +92,18 @@ void UserInterface::SetupTwBar()
 	TwAddVarCB(leftUI, "InterfaceMethod", interfaceMethodType, SetInterfaceMethod, GetInterfaceMethod, this, " group='Mode Menu' label='Mode' ");
 	InterfacePointMethod();
 
+	//Desiginate values that represent the inner noin interface section of the screen
 	upperLeft = Vector2((float)m_winSize.right * m_size,0.0f);
 	lowerRight = Vector2((float)m_winSize.right - ((float)m_winSize.right * m_size), (float)m_winSize.bottom);
 
+	//Set default values to match the current partition defaults
 	*UserInterface::Singleton()->GetMaxObjects() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects();
 	*UserInterface::Singleton()->GetMaxLevels() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels();
 }
 
 void UserInterface::AdjustSize()
 {
+	//Adjust size of interface to match window size
 	const HWND hDesktop = GetDesktopWindow();
 	GetWindowRect(hDesktop, &m_winSize);
 
@@ -107,6 +115,7 @@ void UserInterface::AdjustSize()
 void TW_CALL UserInterface::RebuildPartition(void* _clientData)
 {
 	_clientData;
+	//Will rebuild the current partition using the anttweakbar values unless is the grid
 	if (!(*PartitionManager::Singleton()->GetActiveMethod() == GRID))
 	{
 		*PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects() = *UserInterface::Singleton()->GetMaxObjects();
@@ -118,6 +127,7 @@ void TW_CALL UserInterface::RebuildPartition(void* _clientData)
 void TW_CALL UserInterface::ResetPartition(void* _clientData)
 {
 	_clientData;
+	//Resets the anttweakbar to match the default values of the current partition method
 	PartitionManager::Singleton()->ResetPartition();
 	*UserInterface::Singleton()->GetMaxObjects() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxObjects();
 	*UserInterface::Singleton()->GetMaxLevels() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels();
@@ -125,6 +135,7 @@ void TW_CALL UserInterface::ResetPartition(void* _clientData)
 
 void TW_CALL UserInterface::DeletePoints(void* _clientData)
 {
+	//Deletes all placed points
 	_clientData;
 	PartitionManager::Singleton()->DeletePoints();
 }
@@ -132,6 +143,7 @@ void TW_CALL UserInterface::DeletePoints(void* _clientData)
 void TW_CALL UserInterface::FindTest(void* _clientData)
 {
 	_clientData;
+	//Using the current drawn query, find all points within
 	VBShape* _shape = UserInterface::Singleton()->GetQueryBox();
 	if (_shape)
 	{
@@ -149,6 +161,7 @@ void TW_CALL UserInterface::FindTest(void* _clientData)
 void TW_CALL UserInterface::CheckTest(void* _clientData)
 {
 	_clientData;
+	//Using the current drawn query find the amount of checks that will happen
 	VBShape* _shape = UserInterface::Singleton()->GetQueryBox();
 	if (_shape)
 	{
@@ -165,6 +178,7 @@ void TW_CALL UserInterface::CheckTest(void* _clientData)
 
 void TW_CALL UserInterface::SetActiveMethod(const void *value, void *clientData)
 {
+	//Sets the current active partition method
 	PartitionManager* man = static_cast<PartitionManager*>(clientData);
 
 	man->SetActiveMethod(*static_cast<const PartitionMethods*>(value));
@@ -181,6 +195,7 @@ void  TW_CALL UserInterface::GetActiveMethod(void *value, void *clientData)
 
 void TW_CALL UserInterface::SetInterfaceMethod(const void *value, void *clientData)
 {
+	//Sets the current active UI element - Point or Query
 	UserInterface* ui = static_cast<UserInterface*>(clientData);
 	ui->SetInterfaceMethod(*static_cast<const InterfaceMethod*>(value));
 	ui->RemoveVariables(&ui->m_interfaceMethodVariables);
@@ -202,6 +217,7 @@ void  TW_CALL UserInterface::GetInterfaceMethod(void* _value, void* _clientData)
 
 void TW_CALL UserInterface::SetHighlight(const void *_value, void *_clientData)
 {
+	//Set whether partition boxes should highlight
 	_clientData;
 	PartitionManager::Singleton()->UnHighlightPartition();
 	*PartitionManager::Singleton()->GetHighlight() = *(bool*)_value;
@@ -215,6 +231,7 @@ void  TW_CALL UserInterface::GetHighlight(void* _value, void* _clientData)
 
 void UserInterface::Tick(GameData* _GD)
 {
+	//Tick on certain mouse events
 	if (_GD->mouse->rgbButtons[0] && !_GD->prevMouse->rgbButtons[0])
 	{
 		MouseClick();
@@ -227,7 +244,7 @@ void UserInterface::Tick(GameData* _GD)
 	{
 		MouseRelease();
 	}
-
+	//Only update wire radius if placing more than 1 point
 	if (m_pointsToSpawn > 1)
 	{
 		m_wireRadius->SetPos(Pointer::Singleton()->GetPos());
@@ -239,7 +256,7 @@ void UserInterface::Tick(GameData* _GD)
 		m_wireRadius->SetScale(0);
 		m_wireRadius->Tick(_GD);
 	}
-
+	//Only update querybox if one exists
 	if (queryShape)
 	{
 		queryShape->Tick(_GD);
@@ -248,19 +265,23 @@ void UserInterface::Tick(GameData* _GD)
 
 void UserInterface::MouseClick()
 {
+	//Get mouse cursor location
 	POINT cursor;
 	GetCursorPos(&(cursor));
 	const HWND hDesktop = GetDesktopWindow();
 	ScreenToClient(hDesktop, &cursor);
 
+	//If not over the interface
 	if (PointWithinBounds(upperLeft, lowerRight, Vector2((float)cursor.x, (float)cursor.y)))
 	{
 		switch (m_method)
 		{
 		case INTERFACE_POINT:
+			//Create a single point precisily 
 			PartitionManager::Singleton()->UnHighlightPartition();
 			if (m_pointsToSpawn == 1)
 			{
+				//If within the inner section of the screen
 				if (PointWithinBounds(Vector2(-200,200), Vector2(200, -200), Pointer::Singleton()->GetPos()))
 				{
 					VBShape* p = new VBShape();
@@ -271,12 +292,14 @@ void UserInterface::MouseClick()
 					p->InsertToList();
 				}
 			}
+			//Create multiple points randomly
 			else
 			{
 				for (int i = 0; i < m_pointsToSpawn; ++i)
 				{
 					VBShape* p = new VBShape();
 					
+					//Generate random points within circle radius
 					Vector3 pos = Pointer::Singleton()->GetPos();
 					float a, b, c;
 					while (true)
@@ -293,6 +316,7 @@ void UserInterface::MouseClick()
 					pos.x = pos.x + a;
 					pos.y = pos.y + b;
 
+					//If within the inner section of the screen
 					if (PointWithinBounds(Vector2(-200, 200), Vector2(200, -200), pos))
 					{
 						p->InitialiseShape("WireDiamond2D");
@@ -303,6 +327,7 @@ void UserInterface::MouseClick()
 					}
 					else
 					{
+						//Point has been spawned outside safe area
 						delete p;
 					}
 				}
@@ -310,10 +335,12 @@ void UserInterface::MouseClick()
 			PartitionManager::Singleton()->HighlightPartition();
 			break;
 		case INTERFACE_QUERY:
+			//If not already drawing query then start drawing query
 			if (!isDrawingQuery)
 			{
 				isDrawingQuery = true;
 				queryPivot = Pointer::Singleton()->GetPos();
+				//If query doesn't exist yet then create one
 				if (!queryShape)
 				{
 					queryShape = new VBShape();
@@ -328,6 +355,7 @@ void UserInterface::MouseClick()
 
 void UserInterface::MouseHold()
 {
+	//Get mouse cursor location
 	POINT cursor;
 	GetCursorPos(&(cursor));
 	const HWND hDesktop = GetDesktopWindow();
@@ -336,8 +364,10 @@ void UserInterface::MouseHold()
 	switch (m_method)
 	{
 	case INTERFACE_QUERY:
+		//If not on the interface
 		if (PointWithinBounds(upperLeft, lowerRight, Vector2((float)cursor.x, (float)cursor.y)))
 		{
+			//if drawing query then update position and scale 
 			if (isDrawingQuery)
 			{
 				PositionQuery();
@@ -345,6 +375,7 @@ void UserInterface::MouseHold()
 		}
 		else
 		{
+			//If drawing query and moved onto interface then finish query there
 			if (isDrawingQuery)
 			{
 				CreateQuery();
@@ -356,6 +387,7 @@ void UserInterface::MouseHold()
 
 void UserInterface::MouseRelease()
 {
+	//Get mouse cursor location
 	POINT cursor;
 	GetCursorPos(&(cursor));
 	const HWND hDesktop = GetDesktopWindow();
@@ -364,6 +396,7 @@ void UserInterface::MouseRelease()
 	switch (m_method)
 	{
 	case INTERFACE_QUERY:
+		//Wherever the query is being drawn stop and finish query
 		if (isDrawingQuery)
 		{
 			CreateQuery();
@@ -374,11 +407,14 @@ void UserInterface::MouseRelease()
 
 void UserInterface::CreateQuery()
 {
+	//Stop drawing query
 	isDrawingQuery = false;
+	//If multiple queries then add to a list
 }
 
 void UserInterface::PositionQuery()
 {
+	//Adjust position and scale of query to keep it between starting position and cursor
 	Vector3 _pointer = Pointer::Singleton()->GetPos();
 	queryShape->SetPos((queryPivot + _pointer) / 2);
 	queryShape->SetScale(Vector3(abs(queryPivot.x - _pointer.x)/2, abs(queryPivot.y - _pointer.y)/2,0.0f));
@@ -386,9 +422,11 @@ void UserInterface::PositionQuery()
 
 void UserInterface::Draw(DrawData* _DD)
 {
+	//Draw backgrounds first
 	frameShape->Draw(_DD);
 	backgroundShape->Draw(_DD);
 
+	//Draw radius only when method is point and placing more than 1
 	if (m_method == INTERFACE_POINT)
 	{
 		if (m_pointsToSpawn > 1)
@@ -396,7 +434,7 @@ void UserInterface::Draw(DrawData* _DD)
 			m_wireRadius->Draw(_DD);
 		}
 	}
-
+	//Draw query box if it exists
 	if (queryShape)
 	{
 		queryShape->Draw(_DD);
@@ -405,6 +443,7 @@ void UserInterface::Draw(DrawData* _DD)
 
 void UserInterface::RemoveVariables(list<const char*>* _variables)
 {
+	//Removes all variables within list from anttweakbar
 	for (list<const char*>::iterator it = _variables->begin(); it != _variables->end(); ++it)
 	{
 		TwRemoveVar(leftUI, (*it));
@@ -412,6 +451,8 @@ void UserInterface::RemoveVariables(list<const char*>* _variables)
 	_variables->clear();
 }
 
+//A series of custom functions that manage antweakbar variables
+//to make create and deletoin easier and less hard coded
 void UserInterface::AddVarCB(TwBar* _bar, const char* _name, TwType _type, TwSetVarCallback _setCallback, TwGetVarCallback _getCallback, 
 	void* _clientData, const char* _def, list<const char*>* _list)
 {
@@ -435,6 +476,7 @@ void UserInterface::AddButton(TwBar* _bar, const char* _name, TwButtonCallback _
 
 void UserInterface::InterfacePointMethod()
 {
+	//The antweakbar variables that only show when the interface option is Point
 	AddVarRW(leftUI, "pointstospawn", TW_TYPE_INT32, &m_pointsToSpawn, " group = 'Mode Menu' min=1 max=100 label='Points to Place' ", &m_interfaceMethodVariables);
 	AddVarRW(leftUI, "pointsrange", TW_TYPE_INT32, &m_pointsRange, " group = 'Mode Menu' min=0 max=100 label='Points Range' ", &m_interfaceMethodVariables);
 	AddButton(leftUI, "deletepoints", DeletePoints, nullptr, " group = 'Mode Menu' label='Delete All Points' ", &m_interfaceMethodVariables);
@@ -442,6 +484,7 @@ void UserInterface::InterfacePointMethod()
 
 bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point)
 {
+	//Test the location of the cursor within screen space
 	if (_point.x >= _topLeft.x)
 	{
 		if (_point.x <= _bottomRight.x)
@@ -460,6 +503,7 @@ bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Ve
 
 bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector3 _point)
 {
+	//Test the location of the cursor within world space
 	if (_point.x >= _topLeft.x)
 	{
 		if (_point.x <= _bottomRight.x)
