@@ -109,6 +109,7 @@ void Quadtree::Update(PartitionObject* _object)
 
 void Quadtree::Split()
 {
+	//Create nodes for each quadrant
 	m_nodes[(int)TOP_RIGHT] = new Quadtree(Vector3(m_pos.x + (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
 	m_nodes[(int)TOP_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y - (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);
 	m_nodes[(int)BOTTOM_LEFT] = new Quadtree(Vector3(m_pos.x - (m_halfWidth / 2), m_pos.y + (m_halfWidth / 2), 0.0f), m_halfWidth / 2, m_level + 1, m_maxObjects, m_maxLevels);

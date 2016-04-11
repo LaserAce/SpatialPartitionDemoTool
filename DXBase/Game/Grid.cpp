@@ -161,13 +161,17 @@ void Grid::Update(PartitionObject* _object)
 
 void Grid::Split()
 {
+	//Split equally in both direction
 	for (int i = 0; i < m_splits; ++i)
 	{
 		for (int j = 0; j < m_splits; ++j)
 		{
+			//Create position of node
 			float y = (i * (m_extents.y / ((float)m_splits / 2))) + (m_extents.y / (float)m_splits) - m_extents.y;
 			float x = (j * (m_extents.x / ((float)m_splits / 2))) + (m_extents.x / (float)m_splits) - m_extents.x;
+			//Create extents of node
 			Vector3 extents = Vector3(m_extents.x / (float)m_splits, m_extents.y / (float)m_splits, m_extents.z);
+			//Create node using position and extents
 			m_grids.push_back(new Grid(Vector3(x + m_pos.x,y + m_pos.y,0.0f),extents,m_splits,m_level+1, m_maxObjects, m_maxLevels));
 		}
 	}

@@ -108,6 +108,7 @@ void KDtree::Update(PartitionObject* _object)
 
 void KDtree::Split()
 {
+	//Loop through all objects and get an average position for the split
 	float split = 0;
 	for (list<PartitionObject*>::iterator it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
@@ -121,20 +122,25 @@ void KDtree::Split()
 		}
 	}
 	split /= m_objects.size();
+	//Create the nodes
 	if (m_verticalSplit)
 	{
+		//Create centre and extents for the left node
 		Vector3 centre = Vector3(((m_pos.x - m_extents.x) + split) / 2, m_pos.y, 1.0f);
 		Vector3 extents = Vector3(split - centre.x, m_extents.y, 1.0f);
 		m_left_top = new KDtree(centre,extents,false, m_level+1, m_maxObjects, m_maxLevels);
+		//Create centre and extents for the right node
 		centre = Vector3(((m_pos.x + m_extents.x) + split) / 2, m_pos.y, 1.0f);
 		extents = Vector3(centre.x - split, m_extents.y, 1.0f);
 		m_right_bottom = new KDtree(centre, extents, false, m_level + 1, m_maxObjects, m_maxLevels);
 	}
 	else
 	{
+		//Create centre and extents for the top node
 		Vector3 centre = Vector3(m_pos.x, ((m_pos.y - m_extents.y) + split) / 2, 1.0f);
 		Vector3 extents = Vector3(m_extents.x, split - centre.y, 1.0f);
 		m_left_top = new KDtree(centre, extents, true, m_level + 1, m_maxObjects, m_maxLevels);
+		//Create centre and extents for the bottom node
 		centre = Vector3(m_pos.x, ((m_pos.y + m_extents.y) + split) / 2, 1.0f);
 		extents = Vector3(m_extents.x, centre.y - split, 1.0f);
 		m_right_bottom = new KDtree(centre, extents, true, m_level + 1, m_maxObjects, m_maxLevels);
