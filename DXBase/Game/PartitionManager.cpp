@@ -26,7 +26,7 @@ PartitionManager::PartitionManager()
 	m_partitionMethods.push_back(new BruteForce());
 	m_partitionMethods.push_back(new Grid(Vector3(), Vector3(200, 200, 1), 10, 0, 0, 1));
 	m_partitionMethods.push_back(new Quadtree(Vector3(), 200, 0, 10, 5));
-	m_partitionMethods.push_back(new KDtree(Vector3(), Vector3(200,200, 1), true, 0, 1, 100));
+	m_partitionMethods.push_back(new KDtree(Vector3(), Vector3(200,200, 1), true, 0, 10, 50));
 	m_partitionMethods.push_back(new Rtree());
 }
 

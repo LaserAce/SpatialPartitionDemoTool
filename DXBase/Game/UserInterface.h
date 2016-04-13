@@ -34,6 +34,7 @@ public:
 
 	static void TW_CALL RebuildPartition(void* _clientData);
 	static void TW_CALL ResetPartition(void* _clientData);
+	static void TW_CALL SpawnPoints(void* _clientData);
 	static void TW_CALL DeletePoints(void* _clientData);
 
 	static void TW_CALL FindTest(void* _clientData);

@@ -6,8 +6,8 @@
 
 KDtree::KDtree(Vector3 _centre, Vector3 _extents, bool _split, int _level, int _maxObjects, int _maxLevels)
 {
-	m_defaultMaxObjects = 1;
-	m_defaultMaxLevels = 100;
+	m_defaultMaxObjects = 10;
+	m_defaultMaxLevels = 50;
 
 	m_maxLevels = _maxLevels;
 	m_maxObjects = _maxObjects;
@@ -139,6 +139,7 @@ void KDtree::Split()
 		//Create centre and extents for the top node
 		Vector3 centre = Vector3(m_pos.x, ((m_pos.y - m_extents.y) + split) / 2, 1.0f);
 		Vector3 extents = Vector3(m_extents.x, split - centre.y, 1.0f);
+		//If a break is hit here it may mean there is enough to fill the stack
 		m_left_top = new KDtree(centre, extents, true, m_level + 1, m_maxObjects, m_maxLevels);
 		//Create centre and extents for the bottom node
 		centre = Vector3(m_pos.x, ((m_pos.y + m_extents.y) + split) / 2, 1.0f);

@@ -7,4 +7,8 @@
   <ItemGroup>
     <None Include="shader.fx" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="EnhancedPixelShader.hlsl" />
+    <FxCompile Include="EnhancedVertexShader.hlsl" />
+  </ItemGroup>
 </Project>

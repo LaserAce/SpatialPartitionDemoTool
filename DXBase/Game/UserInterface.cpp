@@ -133,6 +133,25 @@ void TW_CALL UserInterface::ResetPartition(void* _clientData)
 	*UserInterface::Singleton()->GetMaxLevels() = *PartitionManager::Singleton()->GetCurrentRoot()->GetMaxLevels();
 }
 
+void TW_CALL UserInterface::SpawnPoints(void* _clientData)
+{
+	//Spawns points randomly
+	_clientData;
+	for (int i = 0; i < *(int*)_clientData; ++i)
+	{
+		VBShape* _s = new VBShape();
+		_s->InitialiseShape("WireDiamond2D");
+		_s->SetScale(0.75);
+		int _randx = (rand() % 401) - 200;
+		int _randy = (rand() % 401) - 200;
+		_s->SetPos(Vector3((float)_randx, (float)_randy, 0.0f));
+		_s->NewPartitionObject();
+		_s->InsertToList();
+		_s->SetDefaultColour(Color(0.1f, 0.5f, 0));
+	}
+}
+
+
 void TW_CALL UserInterface::DeletePoints(void* _clientData)
 {
 	//Deletes all placed points
@@ -290,6 +309,7 @@ void UserInterface::MouseClick()
 					p->SetPos(Pointer::Singleton()->GetPos());
 					p->NewPartitionObject();
 					p->InsertToList();
+					p->SetDefaultColour(Color(0.1f, 0.5f, 0));
 				}
 			}
 			//Create multiple points randomly
@@ -324,6 +344,7 @@ void UserInterface::MouseClick()
 						p->SetPos(pos);
 						p->NewPartitionObject();
 						p->InsertToList();
+						p->SetDefaultColour(Color(0.1f, 0.5f, 0));
 					}
 					else
 					{
@@ -477,9 +498,11 @@ void UserInterface::AddButton(TwBar* _bar, const char* _name, TwButtonCallback _
 void UserInterface::InterfacePointMethod()
 {
 	//The antweakbar variables that only show when the interface option is Point
-	AddVarRW(leftUI, "pointstospawn", TW_TYPE_INT32, &m_pointsToSpawn, " group = 'Mode Menu' min=1 max=100 label='Points to Place' ", &m_interfaceMethodVariables);
-	AddVarRW(leftUI, "pointsrange", TW_TYPE_INT32, &m_pointsRange, " group = 'Mode Menu' min=0 max=100 label='Points Range' ", &m_interfaceMethodVariables);
+	AddVarRW(leftUI, "pointstospawn", TW_TYPE_INT32, &m_pointsToSpawn, " group = 'Mode Menu' min=1 max=5000 label='Points to Place' ", &m_interfaceMethodVariables);
+	AddVarRW(leftUI, "pointsrange", TW_TYPE_INT32, &m_pointsRange, " group = 'Mode Menu' min=0 max=250 label='Points Range' ", &m_interfaceMethodVariables);
+	AddButton(leftUI, "spawnpoints", SpawnPoints, &m_pointsToSpawn, " group = 'Mode Menu' label='Spawn Random Points' ", &m_interfaceMethodVariables);
 	AddButton(leftUI, "deletepoints", DeletePoints, nullptr, " group = 'Mode Menu' label='Delete All Points' ", &m_interfaceMethodVariables);
+	
 }
 
 bool UserInterface::PointWithinBounds(Vector2 _topLeft, Vector2 _bottomRight, Vector2 _point)

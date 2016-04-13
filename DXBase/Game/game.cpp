@@ -103,7 +103,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 	m_GameObject2Ds.push_back(new ScreenMessage());
 
 	//Randomly generate some starting points
-	for (int i = 0; i < 2000; ++i)
+	for (int i = 0; i < 1000; ++i)
 	{
 		VBShape* _s = new VBShape();
 		_s->InitialiseShape("WireDiamond2D");
@@ -113,6 +113,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HINSTANCE _hInstance) :m_playTime(0), m_my
 		_s->SetPos(Vector3((float)_randx, (float)_randy, 0.0f));
 		_s->NewPartitionObject();
 		_s->InsertToList();
+		_s->SetDefaultColour(Color(0.1f, 0.5f, 0));
 	}
 }
 

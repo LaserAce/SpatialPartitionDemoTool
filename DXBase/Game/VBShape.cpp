@@ -71,12 +71,20 @@ void VBShape::Tick(GameData* _GD)
 }
 void VBShape::Draw(DrawData* _DD)
 {
+	Matrix view = _DD->cam->GetView();
+	Matrix proj = _DD->cam->GetProj();
+	Matrix viewProj = view * proj;
 	//Update constant buffer data so colour and position can be changed dynamicly
-	((ConstantBuffer*)m_pCB)->view = _DD->cam->GetView().Transpose();
+	/*((ConstantBuffer*)m_pCB)->view = _DD->cam->GetView().Transpose();
 	((ConstantBuffer*)m_pCB)->projection = _DD->cam->GetProj().Transpose();
 	((ConstantBuffer*)m_pCB)->ambientCol = m_currentColour;
 	((ConstantBuffer*)m_pCB)->world = m_worldMat.Transpose();
-	((ConstantBuffer*)m_pCB)->rot = m_rotMat.Transpose();
+	((ConstantBuffer*)m_pCB)->rot = m_rotMat.Transpose();*/
+	((ConstantBuffer*)m_pCB)->WorldMatrix = m_worldMat;
+	((ConstantBuffer*)m_pCB)->InverseTransposeWorldMatrix = m_worldMat.Invert().Transpose();
+	((ConstantBuffer*)m_pCB)->WorldViewProjectionMatrix = m_worldMat * viewProj;
+	((ConstantBuffer*)m_pCB)->ambientCol = m_currentColour;
+
 	VBGO::Draw(_DD);
 }
 

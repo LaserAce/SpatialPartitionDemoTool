@@ -23,10 +23,13 @@ struct ConstantBuffer
 		_mm_free(p);
 	}
 
-	Matrix	world;
-	Matrix	view;
-	Matrix	projection;
-	Matrix	rot;
+	Matrix WorldMatrix;
+	Matrix InverseTransposeWorldMatrix;
+	Matrix WorldViewProjectionMatrix;
+	//Matrix	world;
+	//Matrix	view;
+	//Matrix	projection;
+	//Matrix	rot;
 	Color	ambientCol;
 };
 #endif

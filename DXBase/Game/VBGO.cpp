@@ -5,6 +5,13 @@
 #include "drawdata.h"
 #include "vertex.h"
 #include "camera.h"
+#include "Helper.h"
+#include <string>
+
+#include "../Assets/EnhancedVertexShader.h"
+#include "../Assets/EnhancedPixelShader.h"
+
+using std::string;
 
 ID3D11Device* VBGO::s_pd3dDevice = nullptr;
 
@@ -83,8 +90,8 @@ void VBGO::Draw(DrawData* _DD)
 	_DD->pd3dImmediateContext->RSSetState(useRasterS);
 
 	//set standard Constant Buffer to match this object
-	s_pCB->world = m_worldMat.Transpose();
-	s_pCB->rot = m_rotMat.Transpose();
+	//s_pCB->world = m_worldMat.Transpose();
+	//s_pCB->rot = m_rotMat.Transpose();
 
 	//Set vertex buffer
 	UINT stride = sizeof(myVertex);
@@ -100,6 +107,7 @@ void VBGO::Draw(DrawData* _DD)
 
 	_DD->pd3dImmediateContext->UpdateSubresource(useCB, 0, NULL, useCBData, 0, 0);
 	_DD->pd3dImmediateContext->VSSetConstantBuffers(0, 1, &useCB);
+	
 	_DD->pd3dImmediateContext->PSSetConstantBuffers(0, 1, &useCB);
 
 	//unless it has it own set them to the static defaults
@@ -166,7 +174,7 @@ void VBGO::Init(ID3D11Device* _GD)
 {
 	//set up all static stuff
 	VBGO::s_pd3dDevice = _GD;
-	//default vertex shader
+	/*//default vertex shader
 	ID3DBlob* pVertexShaderBuffer = NULL;
 	HRESULT hr = VBGO::CompileShaderFromFile(L"../Assets/shader.fx", "VS", "vs_4_0_level_9_1", &pVertexShaderBuffer);
 	_GD->CreateVertexShader(pVertexShaderBuffer->GetBufferPointer(), pVertexShaderBuffer->GetBufferSize(), NULL, &s_pVertexShader);
@@ -179,9 +187,20 @@ void VBGO::Init(ID3D11Device* _GD)
 	//default vertex layout
 	_GD->CreateInputLayout(myVertexLayout, ARRAYSIZE(myVertexLayout), pVertexShaderBuffer->GetBufferPointer(),
 		pVertexShaderBuffer->GetBufferSize(), &s_pVertexLayout);
+	*/
+	HRESULT hr = _GD->CreateVertexShader(g_EnhancedVertexShader, sizeof(g_EnhancedVertexShader), nullptr, &s_pVertexShader);
+	hr = _GD->CreatePixelShader(g_EnhancedPixelShader, sizeof(g_EnhancedPixelShader), nullptr, &s_pPixelShader);
+	hr = _GD->CreateInputLayout(myVertexLayout, ARRAYSIZE(myVertexLayout), g_EnhancedVertexShader, sizeof(g_EnhancedVertexShader), &s_pVertexLayout);
 	
 	//default texture (white square)
-	hr = CreateDDSTextureFromFile(_GD, L"../Debug/white.dds", nullptr, &s_pTextureRV);
+	string filename =
+#if DEBUG
+		"../Debug/"
+#else
+		"../Release/"
+#endif
+		+ (string)"white.dds";
+	hr = CreateDDSTextureFromFile(_GD, Helper::charToWChar(filename.c_str()), nullptr, &s_pTextureRV);
 
 	//deafult const buffer
 	//GPU side
@@ -202,13 +221,13 @@ void VBGO::Init(ID3D11Device* _GD)
 	SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.MipLODBias = 0.0f;
 	SamDesc.MaxAnisotropy = 1;
-	SamDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 0;
-	SamDesc.MinLOD = 0;
-	SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	SamDesc.MinLOD = -FLT_MAX;
+	SamDesc.MaxLOD = FLT_MAX;
 	hr = _GD->CreateSamplerState(&SamDesc, &s_pSampler);
 
 	//Setup Raster State
@@ -267,9 +286,9 @@ void VBGO::SetWireframe(bool _bool, ID3D11Device* _GD)
 void VBGO::UpdateConstantBuffer(DrawData* _DD)
 {
 	//you'll need your own version of this if you use a different Constant Buffer
-	s_pCB->view = _DD->cam->GetView().Transpose();
-	s_pCB->projection = _DD->cam->GetProj().Transpose();
-	s_pCB->ambientCol = Color();
+	//s_pCB->view = _DD->cam->GetView().Transpose();
+	//s_pCB->projection = _DD->cam->GetProj().Transpose();
+	//s_pCB->ambientCol = Color();
 }
 
 void VBGO::CleanUp()
